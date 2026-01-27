@@ -2,7 +2,6 @@
 
 namespace Domain.Entities;
 
-
 public class Medlem : Entity
 {
     public string Navn { get; private set; }

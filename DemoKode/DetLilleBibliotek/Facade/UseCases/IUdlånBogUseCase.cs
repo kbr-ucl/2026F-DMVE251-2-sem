@@ -1,6 +1,6 @@
-﻿namespace Application.Facade.UdlånBogUseCase;
+﻿namespace Facade.UseCases;
 
-interface IUdlånBogUseCase
+public interface IUdlånBogUseCase
 {
     void LånAfBogTilMedlem(UdlånBogCommmandDto commmandDto);
 }
