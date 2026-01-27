@@ -6,10 +6,11 @@ namespace Domain.Entities;
 public class Medlem : Entity
 {
     public string Navn { get; private set; }
+        
+    private List<Bog> LånteBøger { get; set; }
 
     // Vi skjuler listen, så ingen kan bruge .Add() udefra og omgå vores regler
-    private List<Bog> _lånteBøger;
-    public IReadOnlyCollection<Bog> LånteBogIds => _lånteBøger.AsReadOnly();
+    public IReadOnlyCollection<Bog> AktuelleLånteBøger => LånteBøger.AsReadOnly();
 
     public Medlem(string navn)
     {
@@ -17,7 +18,7 @@ public class Medlem : Entity
 
         Id = Guid.NewGuid();
         Navn = navn;
-        _lånteBøger = [];
+        LånteBøger = [];
     }
 
     // Adfærd: Her samles logikken
@@ -26,20 +27,20 @@ public class Medlem : Entity
         ArgumentNullException.ThrowIfNull(bog);
 
         // Regel: Maks 3 bøger
-        if (_lånteBøger.Count >= 3)
+        if (LånteBøger.Count >= 3)
             throw new InvalidOperationException("Du må højst låne 3 bøger.");
 
         // Handlingen udføres (Koordinering mellem objekter)
-        bog.MarkerSomUdlånt();
-        _lånteBøger.Add(bog);
+        bog.Udlån();
+        LånteBøger.Add(bog);
     }
 
     public void AfleverBog(Bog bog)
     {
-        if (!_lånteBøger.Contains(bog))
+        if (!LånteBøger.Contains(bog))
             throw new InvalidOperationException("Medlemmet har ikke lånt denne bog.");
 
-        bog.MarkerSomAfleveret();
-        _lånteBøger.Remove(bog);
+        bog.Aflever();
+        LånteBøger.Remove(bog);
     }
 }

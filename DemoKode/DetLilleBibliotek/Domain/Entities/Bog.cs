@@ -1,12 +1,13 @@
 ﻿using Domain.Shared;
+using System.Xml.Linq;
 
 namespace Domain.Entities;
 
 public class Bog : Entity
 {
+    public string Isbn { get; private set; }
     public string Titel { get; private set; }
     public string Forfatter { get; private set; }
-    public string Isbn { get; private set; }
     public bool ErUdlånt { get; private set; }
 
     // Konstruktør: Sikrer at vi aldrig har en "tom" bog i systemet
@@ -22,7 +23,7 @@ public class Bog : Entity
     }
 
     // Adfærd: Metoder der håndterer statusændringer sikkert
-    public void MarkerSomUdlånt()
+    public void Udlån()
     {
         if (ErUdlånt)
             throw new InvalidOperationException("Fejl: Bogen er allerede udlånt.");
@@ -30,7 +31,7 @@ public class Bog : Entity
         ErUdlånt = true;
     }
 
-    public void MarkerSomAfleveret()
+    public void Aflever()
     {
         if (!ErUdlånt)
             throw new InvalidOperationException("Fejl: Bogen er allerede på biblioteket.");
