@@ -26,7 +26,7 @@ public class OpretMedlemUseCaseImpl : IOpretMedlemUseCase
         var nytMedlem = new Medlem(commandDto.Medlemsnummer, commandDto.Navn);
 
         // Gem nyt medlem
-        _medlemsRepository.Gem(nytMedlem);
+        _medlemsRepository.Opret(nytMedlem);
 
     }
 }

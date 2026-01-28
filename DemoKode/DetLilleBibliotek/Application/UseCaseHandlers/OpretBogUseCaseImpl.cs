@@ -26,6 +26,6 @@ public class OpretBogUseCaseImpl : IOpretBogUseCase
         var nyBog = new Bog(commandDto.Isbn, commandDto.Forfatter, commandDto.Titel);
 
         // Gem nyt medlem
-        _bogRepo.Gem(nyBog);
+        _bogRepo.Opret(nyBog);
     }
 }
