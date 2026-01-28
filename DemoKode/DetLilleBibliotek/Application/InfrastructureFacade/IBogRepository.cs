@@ -4,6 +4,6 @@ namespace Application.InfrastructureFacade;
 
 public interface IBogRepository
 {
-    Bog HentPåId(Guid id);
+    Bog Hent(string isbn);
     void Gem(Bog bog);
 }

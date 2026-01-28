@@ -5,4 +5,4 @@ public interface IUdlånBogUseCase
     void LånAfBogTilMedlem(UdlånBogCommmandDto commmandDto);
 }
 
-public record UdlånBogCommmandDto(Guid MedlemsId, Guid BogId);
+public record UdlånBogCommmandDto(int Medlemsnummer, string Isbn);
