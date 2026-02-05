@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ConsoleUi/ConsoleUi.csproj" />
+  <Project Path="Domain/Domain.csproj" />
+</Solution>
