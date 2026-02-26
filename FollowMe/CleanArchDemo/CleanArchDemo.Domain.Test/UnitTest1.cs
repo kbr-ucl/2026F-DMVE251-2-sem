@@ -1,11 +1,19 @@
+using CleanArchDemo.Domain.Entity;
+
 namespace CleanArchDemo.Domain.Test
 {
-    public class UnitTest1
+    public class KontoTest
     {
         [Fact]
-        public void Test1()
+        public void Hæv_ved_overtræk_throw_Exception()
         {
-            Assert.True(true);
+            //
+            var sut = new Konto();
+
+            //
+
+            //
+            Assert.Throws<Exception>(() => sut.Hæv(10));
         }
     }
 }
