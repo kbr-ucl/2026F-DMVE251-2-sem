@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="CleanArch.Application/CleanArch.Application.csproj" />
+  <Project Path="CleanArchDemo.Domain.Test/CleanArchDemo.Domain.Test.csproj" />
+  <Project Path="CleanArchDemo.Domain/CleanArchDemo.Domain.csproj" />
+  <Project Path="CleanArchDemo.Facade/CleanArchDemo.Facade.csproj" />
+  <Project Path="CleanArchDemo.Infrastructur/CleanArchDemo.Infrastructur.csproj" />
+</Solution>
