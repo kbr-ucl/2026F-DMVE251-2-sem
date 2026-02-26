@@ -1,11 +1,29 @@
-﻿namespace Core
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Core
 {
+    public interface ITextReader
+    {
+        string[] IndlæsTekst(string filNavn);
+    }
+
+
+
     public class TekstStatistikKalkulatorNonSolid
     {
-        public TekstStatistik BeregnTekstStatistik(string fileNavn)
+        private ITextReader _textReader;
+
+        public TekstStatistikKalkulatorNonSolid(ITextReader textReader)
+        {
+            _textReader = textReader;
+        }
+
+        public TekstStatistik BeregnTekstStatistik(string filNavn)
         {
             // Indlæs fil
-            string[] lines = File.ReadAllLines(fileNavn);
+            string[] lines = _textReader.IndlæsTekst(filNavn); //File.ReadAllLines(fileNavn);
 
             // Beregn statistik
             int antalLinjer = lines.Length;
@@ -21,10 +39,7 @@
             // returner statistik
             return new TekstStatistik(antalAnslag, antalOrd, antalLinjer);
         }
-
-
     }
 
     public record TekstStatistik(int AntalAnslag, int AntalOrd, int AntalLinjer);
-
 }
