@@ -35,10 +35,71 @@ For at køre projekterne skal du have installeret:
 │   ├── Bankkonto/                     # Bankkonto eksempler med arv
 │   ├── 01-Refactoring-opgave-OrderProcessor/  # Order processing refactoring
 │   └── TestAfPrivateSet/              # Arkitektur tests
+├── SolutionTemplate.bat         # Script til at oprette nye Clean Architecture projekter
 └── README.md                     # Denne fil
 ```
 
 Hvert projekt indeholder sin egen solution-fil (`.slnx`), som kan åbnes i Visual Studio eller et kompatibelt IDE.
+
+## SolutionTemplate.bat
+
+**Beskrivelse:** Et Windows batch script, der automatisk opretter et nyt Clean Architecture projekt-skelet med korrekt struktur, projekt-referencer og NuGet-pakker.
+
+**Hvad scriptet opretter:**
+
+**Source projekter (5):**
+- `Domain` - Domæneentiteter, value objects og exceptions (ingen afhængigheder)
+- `Facade` - Interfaces, DTOs og queries (ingen afhængigheder)
+- `UseCases` - Use case implementeringer (refererer Domain + Facade)
+- `Infrastructure` - Persistence, repositories og eksterne services (refererer Domain + Facade + UseCases)
+- `Api` - Web API med controllers (refererer Facade + Infrastructure + UseCases)
+
+**Test projekter (2):**
+- `Domain.Tests` - Unit tests for domain layer (refererer Domain)
+- `UseCases.Tests` - Unit tests for use cases (refererer Domain + Facade + UseCases)
+
+**Automatisk konfiguration:**
+- ✅ Korrekte projekt-referencer efter Dependency Rule
+- ✅ NuGet-pakker installeret:
+  - **Infrastructure:** Entity Framework Core 10 (SqlServer + InMemory)
+  - **Api:** Microsoft.AspNetCore.OpenApi + Scalar.AspNetCore
+  - **Tests:** xunit.v3 + Moq
+- ✅ Mappestruktur oprettet i hvert projekt
+- ✅ Base classes: `Entity`, `AggregateRoot`
+- ✅ Exception klasser: `DomainException`, `NotFoundException`
+
+**Brug:**
+
+1. Åbn PowerShell eller Command Prompt
+2. Naviger til den mappe, hvor du vil oprette projektet
+3. Kør scriptet:
+   ```batch
+   SolutionTemplate.bat
+   ```
+4. Indtast projektnavn når du bliver bedt om det (f.eks. `MinKlinik`)
+5. Scriptet opretter projektet og bygger solution'en
+
+**Eksempel:**
+```batch
+C:\Projects> SolutionTemplate.bat
+Indtast projektnavn (f.eks. MinKlinik): MinKlinik
+
+[1/7] Domain (classlib - ingen afhængigheder)
+[2/7] Facade (classlib - ingen afhængigheder)
+...
+Build OK!
+```
+
+**Krav:**
+- .NET 10.0 SDK skal være installeret
+- Windows operativsystem (batch script)
+
+**Næste skridt efter oprettelse:**
+1. Åbn `.sln` filen i Visual Studio eller Rider
+2. Implementer Value Objects i `Domain\ValueObjects\`
+3. Implementer Entities som arver fra `AggregateRoot` i `Domain\Entities\`
+4. Implementer Use Cases i `UseCases\`
+5. Implementer Repositories i `Infrastructure\Repositories\`
 
 ## Demo-projekter
 
