@@ -55,6 +55,8 @@ Hvert projekt indeholder sin egen solution-fil (`.slnx`), som kan åbnes i Visua
 - **Polymorfi:** Hierarki af `Konsultationstype` (AlmindeligKonsultation, Vaccination, Receptfornyelse, Rådgivning)
 - **Validering:** Pre-condition checks (fx. at starttid ikke kan være i fortiden)
 - **Encapsulation:** Private setters og init-only properties
+- **Varighed:** Hver konsultationstype har sin egen varighed (10-20 minutter)
+- **Mutability:** Konsultationstype kan udskiftes efter oprettelse via `UdskiftKonsultationsTypen()` metode
 
 **Kørsel:**
 ```bash
@@ -76,7 +78,11 @@ dotnet run
 - **Guard clauses:** Defensive programming med tidlig returnering ved fejl
 - **Encapsulation:** Private collections med read-only accessors
 - **Use cases:** Adskilte use case handlers for hver operation
-- **Repository pattern:** Abstraktioner for dataadgang
+  - `IOpretBogUseCase` - Opret nye bøger i systemet
+  - `IOpretMedlemUseCase` - Opret nye medlemmer
+  - `IUdlånBogUseCase` - Håndter udlån af bøger til medlemmer
+- **Repository pattern:** Abstraktioner for dataadgang (`IBogRepository`)
+- **DTOs:** Command DTOs til use case inputs (`OpretBogCommandDto`, `UdlånBogCommmandDto`)
 
 **Eksempel på pre/post conditions:**
 ```csharp
@@ -99,23 +105,26 @@ dotnet build
 
 ### Bankkonto
 
-**Beskrivelse:** Eksempler på bankkonti med arv, der demonstrerer polymorfi og virtual/override metoder.
+**Beskrivelse:** Eksempler på bankkonti med arv, der demonstrerer polymorfi og virtual/override metoder. Dette er standalone kodeeksempler, ikke et komplet .NET projekt.
+
+**Filer:**
+- `Bankkonto.cs` - Grundlæggende Account hierarki med SavingsAccount og CheckingAccount
+- `KundeBankkonto.cs` - Udvidet eksempel med Customer klasse og account type skift
 
 **Vigtige koncepter:**
 - **Arv:** `SavingsAccount` og `CheckingAccount` arver fra `Account`
 - **Polymorfi:** Override af `Withdraw()` metoden med forskellige regler
 - **Virtual/override:** Brug af `virtual` og `override` keywords
 - **Abstrakte regler:** Forskellige minimumsbalancer for forskellige kontotyper
+- **Composition:** Customer klasse har en Account (composition over inheritance eksempel)
+- **Account type skift:** Demonstrerer hvordan en Customer kan skifte kontotype
 
 **Eksempel:**
 - `SavingsAccount`: Minimum balance = 0
 - `CheckingAccount`: Minimum balance = -1000 (overtræk)
+- `Account` konstruktør understøtter nu `openingBalance` parameter
 
-**Kørsel:**
-```bash
-cd DemoKode/Bankkonto
-dotnet run Bankkonto.cs
-```
+**Bemærk:** Dette er standalone C# filer og ikke et .NET projekt. Koden kan kopieres ind i et console projekt eller køres via C# scripting.
 
 ### 01-Refactoring-opgave-OrderProcessor
 
@@ -179,9 +188,25 @@ dotnet test
 
 ### Bygge alle projekter
 
+**Windows (PowerShell):**
+```powershell
+# Fra root mappen
+Get-ChildItem -Path DemoKode -Recurse -Filter "*.slnx" | ForEach-Object { dotnet build $_.FullName }
+```
+
+**Linux/Mac:**
 ```bash
 # Fra root mappen
 find DemoKode -name "*.slnx" -exec dotnet build {} \;
+```
+
+**Alternativ (alle platforme):**
+```bash
+# Byg hvert projekt manuelt
+dotnet build DemoKode/01-Lægehuset-dk-opgave-01/Lægehuset.slnx
+dotnet build DemoKode/DetLilleBibliotek/DetLilleBibliotek.slnx
+dotnet build DemoKode/01-Refactoring-opgave-OrderProcessor/OrderProcessor.slnx
+dotnet build DemoKode/TestAfPrivateSet/TestAfPrivateSet.slnx
 ```
 
 ### Køre tests
@@ -210,3 +235,5 @@ Disse demo-projekter dækker følgende vigtige koncepter:
 - Alle projekter bruger .NET 10.0
 - Projekterne er designet som læringseksempler og kan indeholde forenklede implementeringer
 - Nogle projekter kan kræve yderligere konfiguration (fx. database connection strings) for at køre fuldt ud
+- `Bankkonto` mappen indeholder standalone kodeeksempler, ikke et komplet .NET projekt
+- Solution-filerne (`.slnx`) er Visual Studio 2022+ format og kan åbnes i Visual Studio eller kompatible IDEs
