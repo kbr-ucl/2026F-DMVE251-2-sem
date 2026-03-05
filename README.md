@@ -65,6 +65,7 @@ Hvert projekt indeholder sin egen solution-fil (`.slnx`), som kan åbnes i Visua
   - **Api:** Microsoft.AspNetCore.OpenApi + Scalar.AspNetCore
   - **Tests:** xunit.v3 + Moq
 - ✅ Mappestruktur oprettet i hvert projekt
+- ✅ Tomme mapper indeholder `dummy.cs` placeholder-fil
 - ✅ Base classes: `Entity`, `AggregateRoot`
 - ✅ Exception klasser: `DomainException`, `NotFoundException`
 

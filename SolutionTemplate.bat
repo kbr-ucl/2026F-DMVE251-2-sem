@@ -162,6 +162,68 @@ mkdir src\%PROJ_NAME%.Infrastructure\Persistence 2>nul
 mkdir src\%PROJ_NAME%.Infrastructure\Repositories 2>nul
 mkdir src\%PROJ_NAME%.Infrastructure\QueryHandlers 2>nul
 
+REM === Dummy.cs i tomme mapper ===
+echo.
+echo Tilfojer dummy.cs i tomme mapper...
+
+REM Domain
+(
+echo namespace %PROJ_NAME%.Domain.Entities;
+echo.
+echo // Placeholder - erstattes med faktisk kode
+) > src\%PROJ_NAME%.Domain\Entities\dummy.cs
+(
+echo namespace %PROJ_NAME%.Domain.ValueObjects;
+echo.
+echo // Placeholder - erstattes med faktisk kode
+) > src\%PROJ_NAME%.Domain\ValueObjects\dummy.cs
+(
+echo namespace %PROJ_NAME%.Domain.Enums;
+echo.
+echo // Placeholder - erstattes med faktisk kode
+) > src\%PROJ_NAME%.Domain\Enums\dummy.cs
+
+REM Facade
+(
+echo namespace %PROJ_NAME%.Facade.UseCases;
+echo.
+echo // Placeholder - erstattes med faktisk kode
+) > src\%PROJ_NAME%.Facade\UseCases\dummy.cs
+(
+echo namespace %PROJ_NAME%.Facade.Queries;
+echo.
+echo // Placeholder - erstattes med faktisk kode
+) > src\%PROJ_NAME%.Facade\Queries\dummy.cs
+(
+echo namespace %PROJ_NAME%.Facade.DTOs;
+echo.
+echo // Placeholder - erstattes med faktisk kode
+) > src\%PROJ_NAME%.Facade\DTOs\dummy.cs
+
+REM Infrastructure
+(
+echo namespace %PROJ_NAME%.Infrastructure.Persistence;
+echo.
+echo // Placeholder - erstattes med faktisk kode
+) > src\%PROJ_NAME%.Infrastructure\Persistence\dummy.cs
+(
+echo namespace %PROJ_NAME%.Infrastructure.Repositories;
+echo.
+echo // Placeholder - erstattes med faktisk kode
+) > src\%PROJ_NAME%.Infrastructure\Repositories\dummy.cs
+(
+echo namespace %PROJ_NAME%.Infrastructure.QueryHandlers;
+echo.
+echo // Placeholder - erstattes med faktisk kode
+) > src\%PROJ_NAME%.Infrastructure\QueryHandlers\dummy.cs
+
+REM Api
+(
+echo namespace %PROJ_NAME%.Api.Controllers;
+echo.
+echo // Placeholder - erstattes med faktisk kode
+) > src\%PROJ_NAME%.Api\Controllers\dummy.cs
+
 REM === Starter-filer ===
 echo.
 echo Opretter starter-filer...
