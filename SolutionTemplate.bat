@@ -97,6 +97,16 @@ dotnet sln add src\%PROJ_NAME%.Api\%PROJ_NAME%.Api.csproj
 dotnet sln add tests\%PROJ_NAME%.Domain.Tests\%PROJ_NAME%.Domain.Tests.csproj
 dotnet sln add tests\%PROJ_NAME%.UseCases.Tests\%PROJ_NAME%.UseCases.Tests.csproj
 
+REM === Nullable + WarningsAsErrors ===
+(
+echo ^<Project^>
+echo   ^<PropertyGroup^>
+echo     ^<Nullable^>enable^</Nullable^>
+echo     ^<WarningsAsErrors^>Nullable^</WarningsAsErrors^>
+echo   ^</PropertyGroup^>
+echo ^</Project^>
+) > Directory.Build.props
+
 REM === Projekt-referencer (Dependency Rule) ===
 echo.
 echo Opsaetter projekt-referencer (Dependency Rule)...
