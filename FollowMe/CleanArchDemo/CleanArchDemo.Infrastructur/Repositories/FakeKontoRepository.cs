@@ -1,4 +1,4 @@
-﻿using CleanArch.Application.Repositories;
+using CleanArch.Application.Repositories;
 using CleanArchDemo.Domain.Entity;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace CleanArchDemo.Infrastructur.Repositories
 
         Konto IKontoRepository.Hent(int id)
         {
-            return null;
+            throw new NotImplementedException();
         }
     }
 }

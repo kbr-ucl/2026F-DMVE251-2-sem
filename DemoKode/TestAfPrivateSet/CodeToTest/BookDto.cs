@@ -1,8 +1,8 @@
-﻿namespace CodeToTest
+namespace CodeToTest
 {
     public class BookDto
     {
-        public string Isbn { get; set; }
-        public string Title { get; set; }
+        public required string Isbn { get; set; }
+        public required string Title { get; set; }
     }
 }
