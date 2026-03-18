@@ -34,7 +34,8 @@ For at køre projekterne skal du have installeret:
 │   ├── DetLilleBibliotek/             # Bibliotekssystem med Clean Architecture
 │   ├── Bankkonto/                     # Bankkonto eksempler med arv
 │   ├── 01-Refactoring-opgave-OrderProcessor/  # Order processing refactoring
-│   └── TestAfPrivateSet/              # Arkitektur tests
+│   ├── TestAfPrivateSet/              # Arkitektur tests
+│   └── EfValueObjectsSqlServer2025Demo/  # EF Core 10 value objects på SQL Server 2025
 ├── SolutionTemplate.bat         # Script til at oprette nye Clean Architecture projekter
 └── README.md                     # Denne fil
 ```
