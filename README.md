@@ -226,6 +226,22 @@ cd DemoKode/TestAfPrivateSet/TestProject
 dotnet test
 ```
 
+### EfValueObjectsSqlServer2025Demo
+
+**Beskrivelse:** EF Core 10 value objects på SQL Server 2025 med tre strategier: `OwnsOne`, `ComplexProperty`, og `ComplexProperty + ToJson()`.
+
+**Krav:**
+- .NET 10 SDK
+- SQL Server 2025 tilgængelig på maskinen hvor console app'en kører
+- Rettigheder til at oprette/slette databases (programmet kører `EnsureDeleted()` + `EnsureCreated()` for hver kørsel)
+
+**Kørsel:**
+```bash
+dotnet run --project DemoKode/EfValueObjectsSqlServer2025Demo/EfValueObjectsSqlServer2025Demo.Console/EfValueObjectsSqlServer2025Demo.Console.csproj
+```
+
+**Connection string:** Programmet bruger som standard Windows auth mod `localhost` og databasenavnene i demoen. Du kan overstyre via miljøvariablen `SQLSERVER_CONNECTION_STRING`.
+
 ## Brugsanvisninger
 
 ### Åbne et projekt
