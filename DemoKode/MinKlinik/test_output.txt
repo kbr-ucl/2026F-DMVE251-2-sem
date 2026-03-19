@@ -1,0 +1,13 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  MinKlinik.Domain -> c:\Cloud\SourceCode\2026F-DMVE251-2-sem-TMP\MinKlinik\src\MinKlinik.Domain\bin\Debug\net10.0\MinKlinik.Domain.dll
+  MinKlinik.Facade -> c:\Cloud\SourceCode\2026F-DMVE251-2-sem-TMP\MinKlinik\src\MinKlinik.Facade\bin\Debug\net10.0\MinKlinik.Facade.dll
+  MinKlinik.UseCases -> c:\Cloud\SourceCode\2026F-DMVE251-2-sem-TMP\MinKlinik\src\MinKlinik.UseCases\bin\Debug\net10.0\MinKlinik.UseCases.dll
+  MinKlinik.Domain.Tests -> c:\Cloud\SourceCode\2026F-DMVE251-2-sem-TMP\MinKlinik\tests\MinKlinik.Domain.Tests\bin\Debug\net10.0\MinKlinik.Domain.Tests.dll
+Test run for c:\Cloud\SourceCode\2026F-DMVE251-2-sem-TMP\MinKlinik\tests\MinKlinik.Domain.Tests\bin\Debug\net10.0\MinKlinik.Domain.Tests.dll (.NETCoreApp,Version=v10.0)
+  MinKlinik.UseCases.Tests -> c:\Cloud\SourceCode\2026F-DMVE251-2-sem-TMP\MinKlinik\tests\MinKlinik.UseCases.Tests\bin\Debug\net10.0\MinKlinik.UseCases.Tests.dll
+Test run for c:\Cloud\SourceCode\2026F-DMVE251-2-sem-TMP\MinKlinik\tests\MinKlinik.UseCases.Tests\bin\Debug\net10.0\MinKlinik.UseCases.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+
+

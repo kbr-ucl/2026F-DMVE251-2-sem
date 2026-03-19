@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.*" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MinKlinik.Facade\MinKlinik.Facade.csproj" />
+    <ProjectReference Include="..\MinKlinik.Infrastructure\MinKlinik.Infrastructure.csproj" />
+    <ProjectReference Include="..\MinKlinik.UseCases\MinKlinik.UseCases.csproj" />
+  </ItemGroup>
+</Project>

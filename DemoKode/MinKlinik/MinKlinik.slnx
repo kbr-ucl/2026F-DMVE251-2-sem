@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project DefaultStartup="true" Path="src/MinKlinik.Console/MinKlinik.Console.csproj" />
+    <Project Path="src/MinKlinik.Api/MinKlinik.Api.csproj" />
+    <Project Path="src/MinKlinik.Domain/MinKlinik.Domain.csproj" />
+    <Project Path="src/MinKlinik.Facade/MinKlinik.Facade.csproj" />
+    <Project Path="src/MinKlinik.Infrastructure/MinKlinik.Infrastructure.csproj" />
+    <Project Path="src/MinKlinik.UseCases/MinKlinik.UseCases.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MinKlinik.Domain.Tests/MinKlinik.Domain.Tests.csproj" />
+    <Project Path="tests/MinKlinik.UseCases.Tests/MinKlinik.UseCases.Tests.csproj" />
+  </Folder>
+</Solution>
