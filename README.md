@@ -35,8 +35,11 @@ For at køre projekterne skal du have installeret:
 │   ├── Bankkonto/                     # Bankkonto eksempler med arv
 │   ├── 01-Refactoring-opgave-OrderProcessor/  # Order processing refactoring
 │   ├── TestAfPrivateSet/              # Arkitektur tests
+│   ├── MinKlinik/                     # Clean Architecture eksempel (SolutionTemplate)
 │   └── EfValueObjectsSqlServer2025Demo/  # EF Core 10 value objects på SQL Server 2025
+├── FollowMe/                     # CleanArchDemo, MoqDemo
 ├── SolutionTemplate.bat         # Script til at oprette nye Clean Architecture projekter
+├── Add-NullableProps.ps1        # Bruges af SolutionTemplate
 └── README.md                     # Denne fil
 ```
 
@@ -69,6 +72,7 @@ Hvert projekt indeholder sin egen solution-fil (`.slnx`), som kan åbnes i Visua
 - ✅ Tomme mapper indeholder `dummy.cs` placeholder-fil
 - ✅ Base classes: `Entity`, `AggregateRoot`
 - ✅ Exception klasser: `DomainException`, `NotFoundException`
+- ✅ Nullable enable og WarningsAsErrors (Nullable) i genererede projekter
 
 **Brug:**
 
@@ -95,6 +99,7 @@ Build OK!
 **Krav:**
 - .NET 10.0 SDK skal være installeret
 - Windows operativsystem (batch script)
+- `Add-NullableProps.ps1` skal ligge i samme mappe som `SolutionTemplate.bat` (scriptet bruger PowerShell til at indsætte Nullable-indstillinger i hver `.csproj`)
 
 **Næste skridt efter oprettelse:**
 1. Åbn `.sln` filen i Visual Studio eller Rider
@@ -227,6 +232,34 @@ cd DemoKode/TestAfPrivateSet/TestProject
 dotnet test
 ```
 
+### MinKlinik
+
+**Beskrivelse:** Et klinik-bookingsystem bygget med Clean Architecture, DDD og CQS. Demonstrerer en fuld SolutionTemplate-struktur med API, Console, Entity/AggregateRoot, Value Objects og Query Handlers.
+
+**Arkitektur:**
+- `Domain/` - Entities (Konsultation, Patient, Behandler, Behandlingstype), Value Objects (Tidsinterval), Exceptions
+- `Facade/` - Interfaces og DTO'er
+- `UseCases/` - Use case-implementeringer
+- `Infrastructure/` - EF Core, Repositories, Query Handlers
+- `Api/` - ASP.NET Web API med Scalar
+- `Console/` - Konsol-app med menu (alternativ til API)
+
+**Vigtige koncepter:**
+- **Aggregate Roots:** Konsultation, Patient, Behandler, Behandlingstype — identificeret ud fra livscyklus, transaktionsgrænse, repository og reference via ID
+- **Factory-metode:** `Konsultation.Opret()` håndhæver overlap-validering i domænet
+- **Value Objects:** `Tidsinterval` som record — ejet af Konsultation
+- **CQS:** Commands returnerer `Task`, Queries returnerer DTO'er
+- **To hosts:** API og Console deler samme Use Cases og Infrastructure
+
+**Kørsel:**
+```bash
+# API (Scalar UI: https://localhost:7001/scalar/v1)
+dotnet run --project DemoKode/MinKlinik/src/MinKlinik.Api/MinKlinik.Api.csproj
+
+# Console (menu-drevet)
+dotnet run --project DemoKode/MinKlinik/src/MinKlinik.Console/MinKlinik.Console.csproj
+```
+
 ### EfValueObjectsSqlServer2025Demo
 
 **Beskrivelse:** EF Core 10 value objects på SQL Server 2025 med tre strategier: `OwnsOne`, `ComplexProperty`, og `ComplexProperty + ToJson()`.
@@ -286,6 +319,8 @@ dotnet build DemoKode/01-Lægehuset-dk-opgave-01/Lægehuset.slnx
 dotnet build DemoKode/DetLilleBibliotek/DetLilleBibliotek.slnx
 dotnet build DemoKode/01-Refactoring-opgave-OrderProcessor/OrderProcessor.slnx
 dotnet build DemoKode/TestAfPrivateSet/TestAfPrivateSet.slnx
+dotnet build DemoKode/MinKlinik/MinKlinik.slnx
+dotnet build DemoKode/EfValueObjectsSqlServer2025Demo/EfValueObjectsSqlServer2025Demo.slnx
 ```
 
 ### Køre tests
