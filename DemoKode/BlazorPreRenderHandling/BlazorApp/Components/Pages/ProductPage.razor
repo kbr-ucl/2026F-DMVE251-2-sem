@@ -1,0 +1,25 @@
+﻿@page "/product"
+
+@rendermode InteractiveServer
+@inject IDbContextFactory<AppDbContext> DbFactory
+
+
+<h3>Products</h3>
+
+<ul>
+    @foreach (var product in products)
+    {
+        <li>@product.Name</li>
+    }
+</ul>
+
+@code {
+    public List<Product> products { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+        products = await db.Products.ToListAsync();
+    }
+
+}
