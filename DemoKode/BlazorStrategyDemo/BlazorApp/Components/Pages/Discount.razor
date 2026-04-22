@@ -1,0 +1,49 @@
+﻿@page "/discount"
+@using BlazorApp.Model
+@using BlazorApp.Strategy
+@rendermode InteractiveServer
+@inject IPriceCalculator Calculator
+
+<PageTitle>Price calculator</PageTitle>
+
+<h1>Discount</h1>
+
+
+
+<p role="status">Pris efter rabat: @currentPrice</p>
+<p>----------</p>
+
+@if (cart.Lines.Any())
+{
+    <p>Total: før rabat @cart.Subtotal()</p>
+    <p>----------</p>
+    <p>----------</p>
+    @foreach (var line in cart.Lines)
+    {
+        <p>Produkt: @line.Product</p>
+        <p>Antal: @line.Quantity</p>
+        <p>Enhedspris: @line.UnitPrice</p>
+        <p>Linje total: @line.LineTotal</p>
+        <p>---------</p>
+    }
+
+}
+
+<button class="btn btn-primary" @onclick="FillCart">Fill Cart</button>
+<button class="btn btn-primary" @onclick="CalculateDiscount">Calculate price</button>
+
+    @code {
+        private decimal currentPrice = 0;
+        private Cart cart = new Cart();
+
+        private void CalculateDiscount()
+        {
+            currentPrice = Calculator.Calculate(cart);
+
+        }
+
+        private void FillCart()
+        {
+            cart.Add(new CartLine("Æbler", 10, 100));
+        }
+}
