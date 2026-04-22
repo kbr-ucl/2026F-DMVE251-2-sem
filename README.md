@@ -36,7 +36,9 @@ For at køre projekterne skal du have installeret:
 │   ├── 01-Refactoring-opgave-OrderProcessor/  # Order processing refactoring
 │   ├── TestAfPrivateSet/              # Arkitektur tests
 │   ├── MinKlinik/                     # Clean Architecture eksempel (SolutionTemplate)
-│   └── EfValueObjectsSqlServer2025Demo/  # EF Core 10 value objects på SQL Server 2025
+│   ├── EfValueObjectsSqlServer2025Demo/  # EF Core 10 value objects på SQL Server 2025
+│   ├── BlazorStrategyDemo/            # Blazor Web App med Strategy Pattern (rabatter)
+│   └── Parallisme-vs-async-programering/ # Demo af parallelle vs asynkrone mønstre
 ├── FollowMe/                     # CleanArchDemo, MoqDemo
 ├── SolutionTemplate.bat         # Script til at oprette nye Clean Architecture projekter
 ├── Add-NullableProps.ps1        # Bruges af SolutionTemplate
@@ -276,6 +278,34 @@ dotnet run --project DemoKode/EfValueObjectsSqlServer2025Demo/EfValueObjectsSqlS
 
 **Connection string:** Programmet bruger som standard Windows auth mod `localhost` og databasenavnene i demoen. Du kan overstyre via miljøvariablen `SQLSERVER_CONNECTION_STRING`.
 
+### BlazorStrategyDemo
+
+**Beskrivelse:** En Blazor Web App, der demonstrerer Strategy Pattern til prisberegning med udskiftelige rabatstrategier.
+
+**Vigtige koncepter:**
+- **Strategy Pattern:** `IDiscountStrategy` med konkrete strategier (`NoDiscount`, `PercentageDiscount`, `FixedAmountDiscount`, `BlackFridayDiscount`)
+- **Forretningslogik i service:** `PriceCalculator` anvender valgt strategi på `Cart`/`CartLine`
+- **Komponentbaseret UI:** Blazor sider og komponenter viser og afprøver rabatberegning
+
+**Kørsel:**
+```bash
+dotnet run --project DemoKode/BlazorStrategyDemo/BlazorApp/BlazorApp.csproj
+```
+
+### Parallisme-vs-async-programering
+
+**Beskrivelse:** Console-demo der viser forskellen på parallel programmering og asynkron programmering ved IO-lignende operationer.
+
+**Vigtige koncepter:**
+- **Asynkron programmering:** `async/await` med ikke-blokerende flow
+- **Parallel udførelse:** Samtidig behandling af flere opgaver
+- **Sammenligning:** Praktiske eksempler på hvornår de to tilgange giver mening
+
+**Kørsel:**
+```bash
+dotnet run --project DemoKode/Parallisme-vs-async-programering/Asynkron-demo-1/Asynkron-demo-1.csproj
+```
+
 ## Brugsanvisninger
 
 ### Åbne et projekt
@@ -321,6 +351,8 @@ dotnet build DemoKode/01-Refactoring-opgave-OrderProcessor/OrderProcessor.slnx
 dotnet build DemoKode/TestAfPrivateSet/TestAfPrivateSet.slnx
 dotnet build DemoKode/MinKlinik/MinKlinik.slnx
 dotnet build DemoKode/EfValueObjectsSqlServer2025Demo/EfValueObjectsSqlServer2025Demo.slnx
+dotnet build DemoKode/BlazorStrategyDemo/BlazorStrategyDemo.slnx
+dotnet build DemoKode/Parallisme-vs-async-programering/Parallisme-vs-async-programering.slnx
 ```
 
 ### Køre tests
@@ -342,6 +374,8 @@ Disse demo-projekter dækker følgende vigtige koncepter:
 - ✅ Defensive programming (pre/post conditions, guard clauses)
 - ✅ Dependency Injection og testability
 - ✅ Architecture testing
+- ✅ Asynkron og parallel programmering
+- ✅ Strategy Pattern i UI-applikationer
 - ✅ Best practices for C# og .NET
 
 ## Noter
