@@ -38,8 +38,12 @@ For at køre projekterne skal du have installeret:
 │   ├── MinKlinik/                     # Clean Architecture eksempel (SolutionTemplate)
 │   ├── EfValueObjectsSqlServer2025Demo/  # EF Core 10 value objects på SQL Server 2025
 │   ├── BlazorStrategyDemo/            # Blazor Web App med Strategy Pattern (rabatter)
+│   ├── BlazorPreRenderHandling/       # Blazor prerendering og dobbelt datahentning
 │   └── Parallisme-vs-async-programering/ # Demo af parallelle vs asynkrone mønstre
-├── FollowMe/                     # CleanArchDemo, MoqDemo
+├── FollowMe/                     # Gennemgangsprojekter fra undervisningen
+│   ├── CleanArchDemo/             # Simpelt Clean Architecture flow
+│   ├── ConsoleAppDiExample/       # Dependency Injection i console og Blazor
+│   └── MoqDemo/                   # Unit tests med Moq
 ├── SolutionTemplate.bat         # Script til at oprette nye Clean Architecture projekter
 ├── Add-NullableProps.ps1        # Bruges af SolutionTemplate
 └── README.md                     # Denne fil
@@ -292,6 +296,21 @@ dotnet run --project DemoKode/EfValueObjectsSqlServer2025Demo/EfValueObjectsSqlS
 dotnet run --project DemoKode/BlazorStrategyDemo/BlazorApp/BlazorApp.csproj
 ```
 
+### BlazorPreRenderHandling
+
+**Beskrivelse:** En Blazor Web App, der demonstrerer dobbelt datahentning i Interactive Server-komponenter, når prerendering og interaktiv rendering begge kalder komponentens lifecycle-metoder.
+
+**Vigtige koncepter:**
+- **Blazor prerendering:** Viser hvordan server-side prerendering kan køre datahentning før den interaktive circuit er etableret
+- **Interactive Server:** Komponenten `ProductPage` bruger `@rendermode InteractiveServer`
+- **EF Core i Blazor:** `IDbContextFactory<AppDbContext>` bruges til at hente produkter fra en SQLite demo-database
+- **Refleksionsopgave:** Projektets README guider til at observere, forklare og reducere dobbelt databasekald
+
+**Kørsel:**
+```bash
+dotnet run --project DemoKode/BlazorPreRenderHandling/BlazorApp/BlazorApp.csproj
+```
+
 ### Parallisme-vs-async-programering
 
 **Beskrivelse:** Console-demo der viser forskellen på parallel programmering og asynkron programmering ved IO-lignende operationer.
@@ -304,6 +323,58 @@ dotnet run --project DemoKode/BlazorStrategyDemo/BlazorApp/BlazorApp.csproj
 **Kørsel:**
 ```bash
 dotnet run --project DemoKode/Parallisme-vs-async-programering/Asynkron-demo-1/Asynkron-demo-1.csproj
+```
+
+## FollowMe-projekter
+
+FollowMe-mappen indeholder små gennemgangsprojekter, der understøtter live-kodning og trinvis introduktion af centrale teknikker.
+
+### CleanArchDemo
+
+**Beskrivelse:** Et kompakt Clean Architecture-eksempel med et konto-domæne, use case-lag, facade-interface og fake repository i infrastructure-laget.
+
+**Vigtige koncepter:**
+- **Dependency Rule:** Domænelaget holdes fri for afhængigheder til application/infrastructure
+- **Use case:** `HævBeløbUseCase` koordinerer hævning på en konto
+- **Repository pattern:** `IKontoRepository` abstraherer adgang til konti
+- **Domænelogik:** `Konto.Hæv()` håndhæver reglen om ikke at kunne hæve uden dækning
+
+**Kørsel:**
+```bash
+dotnet build FollowMe/CleanArchDemo/CleanArchDemo.slnx
+```
+
+### ConsoleAppDiExample
+
+**Beskrivelse:** Eksempel på Dependency Injection og Inversion of Control i både en console app og en Blazor Web App.
+
+**Arkitektur:**
+- `ConsoleApp/` - Registrerer services i `ServiceCollection` og kører en simpel applikationsklasse
+- `BlazorApp/` - Registrerer samme type services i ASP.NET Core DI-containeren
+
+**Vigtige koncepter:**
+- **Dependency Injection:** `IGreetingService` injiceres i applikationsklasser
+- **Service lifetimes:** Eksempler med `AddTransient`
+- **IoC container:** Viser hvordan objekter oprettes via `GetRequiredService`
+
+**Kørsel:**
+```bash
+dotnet run --project FollowMe/ConsoleAppDiExample/ConsoleApp/ConsoleApp.csproj
+dotnet run --project FollowMe/ConsoleAppDiExample/BlazorApp/BlazorApp.csproj
+```
+
+### MoqDemo
+
+**Beskrivelse:** Unit test-demo, der viser hvordan Moq kan bruges til at isolere en klasse fra dens afhængigheder.
+
+**Vigtige koncepter:**
+- **Mocking:** `ITextReader` mockes, så testen ikke afhænger af filsystemet
+- **Unit tests:** `TekstStatistikKalkulatorTests` tester beregning af antal anslag, ord og linjer
+- **Testability:** Constructor injection gør `TekstStatistikKalkulatorNonSolid` testbar
+
+**Kørsel:**
+```bash
+dotnet test FollowMe/MoqDemo/MoqDemo.slnx
 ```
 
 ## Brugsanvisninger
@@ -352,15 +423,23 @@ dotnet build DemoKode/TestAfPrivateSet/TestAfPrivateSet.slnx
 dotnet build DemoKode/MinKlinik/MinKlinik.slnx
 dotnet build DemoKode/EfValueObjectsSqlServer2025Demo/EfValueObjectsSqlServer2025Demo.slnx
 dotnet build DemoKode/BlazorStrategyDemo/BlazorStrategyDemo.slnx
+dotnet build DemoKode/BlazorPreRenderHandling/BlazorPreRenderHandling.slnx
 dotnet build DemoKode/Parallisme-vs-async-programering/Parallisme-vs-async-programering.slnx
+dotnet build FollowMe/CleanArchDemo/CleanArchDemo.slnx
+dotnet build FollowMe/ConsoleAppDiExample/ConsoleAppDiExample.slnx
+dotnet build FollowMe/MoqDemo/MoqDemo.slnx
 ```
 
 ### Køre tests
 
-For projekter med tests (fx. TestAfPrivateSet):
+For projekter med tests (fx. TestAfPrivateSet, MinKlinik, CleanArchDemo og MoqDemo):
 ```bash
 cd DemoKode/TestAfPrivateSet/TestProject
 dotnet test
+
+dotnet test DemoKode/MinKlinik/MinKlinik.slnx
+dotnet test FollowMe/CleanArchDemo/CleanArchDemo.slnx
+dotnet test FollowMe/MoqDemo/MoqDemo.slnx
 ```
 
 ## Læringsmål
@@ -376,6 +455,8 @@ Disse demo-projekter dækker følgende vigtige koncepter:
 - ✅ Architecture testing
 - ✅ Asynkron og parallel programmering
 - ✅ Strategy Pattern i UI-applikationer
+- ✅ Blazor prerendering og Interactive Server lifecycle
+- ✅ Mocking med Moq
 - ✅ Best practices for C# og .NET
 
 ## Noter
