@@ -138,7 +138,7 @@ Det undgår dobbelt datahentning mellem prerender og interaktiv render, uden at 
 
 ### Infrastruktur-note
 
-`AddInfrastructure(Action<DbContextOptionsBuilder>)` kalder nu altid `configureDb(options)` først. Det sikrer korrekt provider-konfiguration (`UseSqlServer`/`UseInMemoryDatabase`) i alle hosts, hvorefter man kan tilføje eventuel debug-logging.
+`AddInfrastructure(Action<DbContextOptionsBuilder>)` kalder `configureDb(options)` og aktiverer derefter EF Core debug-logging via `LogTo(Console.WriteLine)`, `EnableSensitiveDataLogging()` og `EnableDetailedErrors()`.
 
 **API:**
 
