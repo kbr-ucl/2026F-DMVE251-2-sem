@@ -27,7 +27,7 @@ MinKlinik/
 │   ├── MinKlinik.UseCases/          # Use Case-klasser + Repository-interfaces
 │   ├── MinKlinik.Infrastructure/    # EF Core, Repositories, Query Handlers, SeedData
 │   ├── MinKlinik.Api/               # ASP.NET Web API + Scalar
-│   ├── MinKlinik.Blazor/            # Blazor frontend (InteractiveServer pages)
+│   ├── MinKlinik.Blazor/            # Blazor frontend (Interactive Server; Weather bruger StreamRendering)
 │   └── MinKlinik.Console/           # Konsol-app (menu-drevet) — alternativ til API
 │
 └── tests/
@@ -61,7 +61,7 @@ En Aggregate Root er en entity der opfylder alle fire kriterier:
 |------|---------------|
 | `Tidsinterval` | Value Object — ingen egen identitet, eksisterer kun som del af Konsultation |
 | `KonsultationStatus` | Enum — en simpel værdi, ikke en entity |
-| `DomainException` | Infrastruktur — ikke et domænekoncept |
+| `DomainException` | Exception — ikke en entity; ligger i `MinKlinik.Domain/Exceptions` |
 
 ### Klassehierarki i koden
 
@@ -123,19 +123,23 @@ var konsultation = Konsultation.Opret(
 dotnet run --project src/MinKlinik.Blazor/MinKlinik.Blazor.csproj
 ```
 
-Frontend routes: `/`, `/stamdata`, `/konsultationer`, `/opret-konsultation`, `/afslut-konsultation`, `/aflys-konsultation`.
+Frontend routes: `/`, `/stamdata`, `/konsultationer`, `/opret-konsultation`, `/afslut-konsultation`, `/aflys-konsultation`, `/counter`, `/weather`, `/not-found`, `/Error` (fejlside).
 
 ### Blazor Interactive Server (.NET 10)
 
-Siderne under `Components/Pages` bruger **Interactive Server uden prerender**:
+**Stamdata, konsultationer og konsultation-handlinger** (`Stamdata`, `Konsultationer`, `OpretKonsultation`, `AfslutKonsultation`, `AflysKonsultation`) bruger **Interactive Server uden prerender**:
 
 ```razor
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 ```
 
-Så kører siden først som fuldt interaktiv (ingen statisk prerender-fase), hvilket undgår typiske problemer med scoped services og datahentning under prerender.
+Det undgår typiske problemer med scoped services og datahentning under prerender.
 
-Lister der hentes i `OnInitializedAsync` er markeret med **`[PersistentState]`** og tildeles med null-coalescing assignment (`??=`), så navngivning matcher domænet og hydration kan genbruge persisted state hvor det understøttes:
+**`Home`** og **`Counter`** bruger den korte form `@rendermode InteractiveServer` (samme render mode-familie, men uden eksplicit `prerender: false` i koden).
+
+**`Weather`** (`/weather`) bruger **`[StreamRendering]`** — ikke Interactive Server.
+
+Lister der hentes i `OnInitializedAsync` på data-siderne ovenfor er markeret med **`[PersistentState]`** og tildeles med null-coalescing assignment (`??=`), så navngivning matcher domænet og hydration kan genbruge persisted state hvor det understøttes:
 
 ```razor
 [PersistentState]
@@ -152,7 +156,25 @@ protected override async Task OnInitializedAsync()
 
 ### Infrastruktur-note
 
-`AddInfrastructure(Action<DbContextOptionsBuilder>)` kalder `configureDb(options)` og aktiverer derefter EF Core debug-logging via `LogTo(Console.WriteLine)`, `EnableSensitiveDataLogging()` og `EnableDetailedErrors()`.
+`AddInfrastructure` findes i to varianter i `DependencyInjection.cs`. Blazor- og Api-værter kalder typisk `AddInfrastructure(builder.Configuration)` i `Program.cs`.
+
+1. **`AddInfrastructure(IConfiguration)`** — læser `ConnectionStrings:MinKlinikDb`. Er strengen sat, delegeres til variant (2) med `UseSqlServer` (så EF debug-logging som nedenfor gælder). Er strengen tom, registreres SQLite in-memory med en åben `SqliteConnection` som singleton og `AddDbContext<AppDbContext>((serviceProvider, options) => options.UseSqlite(...))` — **uden** `LogTo` / `EnableSensitiveDataLogging` / `EnableDetailedErrors`.
+
+2. **`AddInfrastructure(Action<DbContextOptionsBuilder> configureDb)`** — `AddDbContext<AppDbContext>(options => { ... })` hvor der **først** sættes `LogTo(Console.WriteLine)`, `EnableSensitiveDataLogging()` og `EnableDetailedErrors()`, og **derefter** kaldes `configureDb(options)` (fx `UseSqlServer` fra variant 1 eller `UseSqlServer` fra Console-appens `Program.cs`).
+
+### Database: SQLite in-memory (test) og SQL Server (drift)
+
+**Test og hurtig demo (Blazor og Api uden konfigureret connection string)**  
+Standard-`appsettings` for Blazor og Api indeholder **ingen** `ConnectionStrings:MinKlinikDb`. Så vælger `AddInfrastructure(IConfiguration)` automatisk **SQLite in-memory** (`DataSource=:memory:`). En åben `SqliteConnection` registreres som **singleton**, så alle `AppDbContext`-instanser (på tværs af scopes) deler **samme** in-memory database — ellers ville hver scope få sin egen tomme database.
+
+Ved opstart kalder både Blazor- og Api-`Program.cs` `SeedData.Initialize(db)`, som først kalder `Database.EnsureCreated()` og derefter fylder stamdata, **kun hvis** der ikke allerede findes rækker. Data **overlever ikke** procesgenstart; hvert app-kørsel starter med et nyt in-memory skema (og seed ved tom database). Denne gren har **ikke** den udvidede EF Core console-logging (se infrastruktur-note punkt 1).
+
+**Drift og lokal udvikling mod SQL Server**  
+Sæt `ConnectionStrings:MinKlinikDb` til en gyldig SQL Server-connection string, for eksempel i `appsettings.Development.json` / `appsettings.Production.json`, via **dotnet user-secrets**, eller med miljøvariablen `ConnectionStrings__MinKlinikDb` (Azure App Service og lignende bruger ofte sidstnævnte). Derefter bruges `UseSqlServer` gennem variant (2), inklusive `LogTo` og detaljeret EF-logging som i koden i dag — praktisk under udvikling, men i **produktion** bør man normalt styre logning og undgå sensitive SQL-detaljer i logs (et drift- og sikkerhedsspørgsmål frem for noget demoen retter ind for dig).
+
+**Console-appen** følger et andet mønster: den kalder direkte `AddInfrastructure(options => options.UseSqlServer(...))` med en connection string i `Program.cs` — velegnet som reference for »altid SQL Server«, men i rigtig drift bør connection strings komme fra konfiguration eller et hemmelighedslager (fx Key Vault, user secrets), ikke fra kildekode.
+
+Se også forudsætningerne om valgfri SQL Server for `ToJson()` med `json`-datatype i domænemodellen.
 
 **API:**
 
@@ -168,7 +190,7 @@ dotnet run --project src/MinKlinik.Api/MinKlinik.Api.csproj
 dotnet run --project src/MinKlinik.Console/MinKlinik.Console.csproj
 ```
 
-Menu: Vis stamdata, Vis konsultationer, Opret konsultation, Afslut, Aflys.
+Menu (numre i konsollen): 1 Vis stamdata, 2 Vis konsultationer, 3 Opret konsultation, 4 Afslut konsultation, 5 Aflys konsultation, 0 Afslut.
 
 **Byg hele løsningen:**
 
@@ -194,7 +216,7 @@ dotnet test
 ## Nøgleprincipper demonstreret
 
 - **Tre hosts**: Blazor (UI), API (HTTP) og Console (menu) deler samme DI, Use Cases og Infrastructure
-- **Blazor**: Interactive Server med `prerender: false`; liste-data med `[PersistentState]` og `??=` i `OnInitializedAsync`
+- **Blazor**: Stamdata/konsultation-sider med `InteractiveServerRenderMode(prerender: false)`; `Home`/`Counter` med `InteractiveServer`; liste-DTO'er med `[PersistentState]` og `??=` hvor data hentes i `OnInitializedAsync`
 - **Entity / AggregateRoot base classes**: Eksplicit markering af domæneroller
 - **4 identificerede Aggregate Roots**: Konsultation, Patient, Behandler, Behandlingstype
 - **Static factory-metode**: `Konsultation.Opret()` håndhæver overlap som generel forretningsregel
