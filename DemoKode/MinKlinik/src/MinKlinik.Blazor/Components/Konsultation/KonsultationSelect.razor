@@ -1,0 +1,41 @@
+@using System.Linq.Expressions
+
+<InputSelect id="@Id"
+             TValue="Guid?"
+             Value="Value"
+             ValueChanged="OnValueChanged"
+             ValueExpression="ValueExpression"
+             class="@CssClass">
+    <option value="">@Placeholder</option>
+    @foreach (var konsultation in Konsultationer)
+    {
+        <option value="@konsultation.Id">
+            @konsultation.Fra.ToString("yyyy-MM-dd HH:mm") - @konsultation.PatientNavn - @konsultation.BehandlerNavn (@konsultation.Status)
+        </option>
+    }
+</InputSelect>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyList<KonsultationDto> Konsultationer { get; set; } = [];
+
+    [Parameter]
+    public string Id { get; set; } = "konsultationSelect";
+
+    [Parameter]
+    public string CssClass { get; set; } = "form-select";
+
+    [Parameter]
+    public string Placeholder { get; set; } = "Vaelg konsultation";
+
+    [Parameter]
+    public Guid? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<Guid?> ValueChanged { get; set; }
+
+    [Parameter, EditorRequired]
+    public Expression<Func<Guid?>> ValueExpression { get; set; } = default!;
+
+    private Task OnValueChanged(Guid? value) => ValueChanged.InvokeAsync(value);
+}
