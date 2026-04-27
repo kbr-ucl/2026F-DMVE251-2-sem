@@ -138,7 +138,7 @@ Det undgår dobbelt datahentning mellem prerender og interaktiv render, uden at 
 
 ### Infrastruktur-note
 
-`AddInfrastructure(Action<DbContextOptionsBuilder>)` kalder nu altid `configureDb(options)` før logger-opsætning. Det sikrer korrekt provider-konfiguration (`UseSqlServer`/`UseInMemoryDatabase`) i alle hosts.
+`AddInfrastructure(Action<DbContextOptionsBuilder>)` kalder nu altid `configureDb(options)` først. Det sikrer korrekt provider-konfiguration (`UseSqlServer`/`UseInMemoryDatabase`) i alle hosts, hvorefter man kan tilføje eventuel debug-logging.
 
 **API:**
 
