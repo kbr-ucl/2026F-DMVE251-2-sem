@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using MinKlinik.Facade.Queries;
 using MinKlinik.Infrastructure.Persistence;
 using MinKlinik.Infrastructure.QueryHandlers;
@@ -12,7 +11,7 @@ using MinKlinik.UseCases;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Registrerer alle infrastruktur-implementeringer: DbContext, repositories og query handlers.
+///     Registrerer alle infrastruktur-implementeringer: DbContext, repositories og query handlers.
 /// </summary>
 public static class InfrastructureServiceCollectionExtensions
 {
@@ -43,12 +42,10 @@ public static class InfrastructureServiceCollectionExtensions
     {
         services.AddDbContext<AppDbContext>((serviceProvider, options) =>
         {
-            //var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-            options.LogTo(Console.WriteLine);//, LogLevel.Debug);
-            //options.EnableSensitiveDataLogging(true);
-            //options.EnableDetailedErrors();
+            options.LogTo(Console.WriteLine);
+            options.EnableSensitiveDataLogging();
+            options.EnableDetailedErrors();
             configureDb(options);
-
         });
 
         // Repositories (Use Case-interfaces → Infrastructure-implementeringer)
