@@ -32,7 +32,6 @@ public static class InfrastructureServiceCollectionExtensions
                 options.UseInMemoryDatabase("MinKlinikDb");
             else
                 options.UseSqlServer(connectionString);
-
         });
     }
 
@@ -44,11 +43,12 @@ public static class InfrastructureServiceCollectionExtensions
     {
         services.AddDbContext<AppDbContext>((serviceProvider, options) =>
         {
+            //var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+            options.LogTo(Console.WriteLine);//, LogLevel.Debug);
+            //options.EnableSensitiveDataLogging(true);
+            //options.EnableDetailedErrors();
             configureDb(options);
 
-            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-            options.UseLoggerFactory(loggerFactory);
-            options.EnableSensitiveDataLogging(true);
         });
 
         // Repositories (Use Case-interfaces → Infrastructure-implementeringer)
