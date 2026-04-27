@@ -5,33 +5,17 @@ using MinKlinik.Facade.Queries;
 using MinKlinik.Facade.UseCases;
 using MinKlinik.Infrastructure;
 using MinKlinik.Infrastructure.Persistence;
-using MinKlinik.Infrastructure.QueryHandlers;
-using MinKlinik.Infrastructure.Repositories;
-using MinKlinik.UseCases;
-using MinKlinik.UseCases.Konsultationer;
+
+const string ConnectionString =
+    @"Server=localhost;Database=MinKlinikDb;Trusted_Connection=True;TrustServerCertificate=True;";
 
 var services = new ServiceCollection();
 
-// Database (SQL Server LocalDB)
-services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(@"Server=localhost;Database=MinKlinikDb;Trusted_Connection=True;TrustServerCertificate=True;"));
-
-// Repositories
-services.AddScoped<IKonsultationRepository, KonsultationRepository>();
-services.AddScoped<IBehandlingstypeRepository, BehandlingstypeRepository>();
-services.AddScoped<IPatientRepository, PatientRepository>();
-services.AddScoped<IBehandlerRepository, BehandlerRepository>();
-
-// Use Cases
-services.AddScoped<IOpretKonsultationUseCase, OpretKonsultationUseCase>();
-services.AddScoped<IAfslutKonsultationUseCase, AfslutKonsultationUseCase>();
-services.AddScoped<IAflysKonsultationUseCase, AflysKonsultationUseCase>();
-
-// Queries
-services.AddScoped<IKonsultationQueries, KonsultationQueriesImpl>();
-services.AddScoped<IBehandlingstypeQueries, BehandlingstypeQueriesImpl>();
-services.AddScoped<IPatientQueries, PatientQueriesImpl>();
-services.AddScoped<IBehandlerQueries, BehandlerQueriesImpl>();
+// Applikationslag — præcis samme extension metoder som Api bruger.
+// Console vælger selv DbContext-opsætning (SQL Server LocalDB her).
+services
+    .AddUseCases()
+    .AddInfrastructure(options => options.UseSqlServer(ConnectionString));
 
 var serviceProvider = services.BuildServiceProvider();
 

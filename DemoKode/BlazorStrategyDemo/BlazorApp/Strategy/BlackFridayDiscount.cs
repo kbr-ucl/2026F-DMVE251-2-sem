@@ -13,4 +13,17 @@ namespace BlazorApp.Strategy
 
         public decimal Calculate(Cart cart) => cart.Subtotal() * _percentage;
     }
+
+
+    public sealed class KajSpecialDiscount : IDiscountStrategy
+    {
+        private readonly decimal _percentage;
+
+        public KajSpecialDiscount(decimal percentage = 0.75m)
+        {
+            _percentage = percentage;
+        }
+
+        public decimal Calculate(Cart cart) => cart.Subtotal() * _percentage;
+    }
 }

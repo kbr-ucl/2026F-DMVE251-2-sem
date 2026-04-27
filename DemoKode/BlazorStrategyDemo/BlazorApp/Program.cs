@@ -13,7 +13,7 @@ builder.Services.AddScoped<IDiscountStrategy, NoDiscount>();
 builder.Services.AddScoped<IDiscountStrategy>(_ => new PercentageDiscount(0.10m));
 builder.Services.AddScoped<IDiscountStrategy>(_ => new FixedAmountDiscount(50m, 300m));
 builder.Services.AddScoped<IDiscountStrategy>(_ => new BlackFridayDiscount(0.25m));
-
+builder.Services.AddScoped<IDiscountStrategy, KajSpecialDiscount>(_ => new KajSpecialDiscount(0.90m));
 // Context'en. Den får AUTOMATISK en IEnumerable<IDiscountStrategy>
 // med alle fire strategier ind i konstruktøren.
 builder.Services.AddScoped<IPriceCalculator, PriceCalculator>();

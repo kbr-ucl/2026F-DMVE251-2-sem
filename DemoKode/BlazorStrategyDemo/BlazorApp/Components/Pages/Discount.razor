@@ -20,11 +20,12 @@
     <p>----------</p>
     @foreach (var line in cart.Lines)
     {
-        <p>Produkt: @line.Product</p>
+        <CartLineComponent line ="@line"></CartLineComponent>
+@*         <p>Produkt: @line.Product</p>
         <p>Antal: @line.Quantity</p>
         <p>Enhedspris: @line.UnitPrice</p>
         <p>Linje total: @line.LineTotal</p>
-        <p>---------</p>
+        <p>---------</p> *@
     }
 
 }

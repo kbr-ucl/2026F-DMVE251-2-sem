@@ -30,9 +30,16 @@ public sealed class PriceCalculator : IPriceCalculator
         ArgumentNullException.ThrowIfNull(cart);
 
         var subtotal = cart.Subtotal();
-        var bestDiscount = _strategies
-            .Select(s => s.Calculate(cart))
-            .Max();
+        //decimal bestDiscount = 0;
+        //foreach (var strategy in _strategies)
+        //{
+        //    var discount = strategy.Calculate(cart);
+        //    if (discount > bestDiscount) bestDiscount = discount;
+        //}
+        var bestDiscounts = _strategies
+            .Select(s => s.Calculate(cart)).ToList();
+
+        var bestDiscount = bestDiscounts.Max();
 
         return subtotal - bestDiscount;
     }

@@ -1,0 +1,18 @@
+﻿@using BlazorApp.Model
+
+    <p>Produkt: @line.Product</p>
+    <p>Antal: @line.Quantity</p>
+    <p>Enhedspris: @line.UnitPrice</p>
+    <p>Linje total: @line.LineTotal</p>
+    <p>---------</p>
+
+
+@code {
+
+    [Parameter]
+    public CartLine line{
+        get;
+        set;
+    }
+
+}
