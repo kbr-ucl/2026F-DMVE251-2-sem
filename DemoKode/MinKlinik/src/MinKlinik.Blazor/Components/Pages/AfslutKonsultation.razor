@@ -1,5 +1,5 @@
 @page "/afslut-konsultation"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @inject IKlinikUiService KlinikUiService
 
 <PageTitle>Afslut konsultation</PageTitle>

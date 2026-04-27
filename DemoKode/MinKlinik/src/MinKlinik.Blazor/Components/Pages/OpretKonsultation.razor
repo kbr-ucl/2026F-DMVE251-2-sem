@@ -1,5 +1,5 @@
 @page "/opret-konsultation"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @inject IKlinikUiService KlinikUiService
 
 <PageTitle>Opret konsultation</PageTitle>
