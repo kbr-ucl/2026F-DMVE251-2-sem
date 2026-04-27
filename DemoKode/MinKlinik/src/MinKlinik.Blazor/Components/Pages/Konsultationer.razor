@@ -1,5 +1,5 @@
 @page "/konsultationer"
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@rendermode InteractiveServer
 @inject IKonsultationQueries KonsultationQueries
 
 <PageTitle>Konsultationer</PageTitle>
@@ -14,25 +14,26 @@ else if (_indlaeser)
 {
     <p>Indlaeser konsultationer...</p>
 }
-else if (_konsultationer.Count == 0)
+else if ((_konsultationer?.Count ?? 0) == 0)
 {
     <p>(ingen)</p>
 }
 else
 {
-    <KonsultationTable Konsultationer="_konsultationer" Caption="Alle konsultationer" />
+    <KonsultationTable Konsultationer="_konsultationer ?? []" Caption="Alle konsultationer" />
 }
 
 @code {
     private bool _indlaeser = true;
     private string? _fejl;
-    private IReadOnlyList<KonsultationDto> _konsultationer = [];
+    [PersistentState]
+    public IReadOnlyList<KonsultationDto>? _konsultationer { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            _konsultationer = await KonsultationQueries.HentAlleAsync();
+            _konsultationer ??= await KonsultationQueries.HentAlleAsync();
         }
         catch (Exception ex)
         {

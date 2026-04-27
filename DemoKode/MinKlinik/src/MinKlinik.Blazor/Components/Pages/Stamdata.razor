@@ -1,5 +1,5 @@
 @page "/stamdata"
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@rendermode InteractiveServer
 @inject IBehandlingstypeQueries BehandlingstypeQueries
 @inject IPatientQueries PatientQueries
 @inject IBehandlerQueries BehandlerQueries
@@ -20,14 +20,14 @@ else
 {
     <section>
         <h3>Behandlingstyper</h3>
-        @if (_behandlingstyper.Count == 0)
+        @if ((_behandlingstyper?.Count ?? 0) == 0)
         {
             <p>Ingen behandlingstyper.</p>
         }
         else
         {
             <ul>
-                @foreach (var type in _behandlingstyper)
+                @foreach (var type in _behandlingstyper ?? [])
                 {
                     <li>@type.Navn</li>
                 }
@@ -37,14 +37,14 @@ else
 
     <section>
         <h3>Patienter</h3>
-        @if (_patienter.Count == 0)
+        @if ((_patienter?.Count ?? 0) == 0)
         {
             <p>Ingen patienter.</p>
         }
         else
         {
             <ul>
-                @foreach (var patient in _patienter)
+                @foreach (var patient in _patienter ?? [])
                 {
                     <li>@patient.Navn</li>
                 }
@@ -54,14 +54,14 @@ else
 
     <section>
         <h3>Behandlere</h3>
-        @if (_behandlere.Count == 0)
+        @if ((_behandlere?.Count ?? 0) == 0)
         {
             <p>Ingen behandlere.</p>
         }
         else
         {
             <ul>
-                @foreach (var behandler in _behandlere)
+                @foreach (var behandler in _behandlere ?? [])
                 {
                     <li>@behandler.Navn (@behandler.Speciale)</li>
                 }
@@ -73,17 +73,20 @@ else
 @code {
     private bool _indlaeser = true;
     private string? _fejl;
-    private IReadOnlyList<BehandlingstypeDto> _behandlingstyper = [];
-    private IReadOnlyList<PatientDto> _patienter = [];
-    private IReadOnlyList<BehandlerDto> _behandlere = [];
+    [PersistentState]
+    public IReadOnlyList<BehandlingstypeDto>? _behandlingstyper { get; set; }
+    [PersistentState]
+    public IReadOnlyList<PatientDto>? _patienter { get; set; }
+    [PersistentState]
+    public IReadOnlyList<BehandlerDto>? _behandlere { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            _behandlingstyper = await BehandlingstypeQueries.HentAlleAsync();
-            _patienter = await PatientQueries.HentAlleAsync();
-            _behandlere = await BehandlerQueries.HentAlleAsync();
+            _behandlingstyper ??= await BehandlingstypeQueries.HentAlleAsync();
+            _patienter ??= await PatientQueries.HentAlleAsync();
+            _behandlere ??= await BehandlerQueries.HentAlleAsync();
         }
         catch (Exception ex)
         {

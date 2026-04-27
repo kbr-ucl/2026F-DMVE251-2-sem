@@ -257,7 +257,7 @@ dotnet test
 - **Value Objects:** `Tidsinterval` som record — ejet af Konsultation
 - **CQS:** Commands returnerer `Task`, Queries returnerer DTO'er
 - **Tre hosts:** Blazor (UI), API og Console deler samme Use Cases og Infrastructure
-- **Prerender-håndtering (.NET 10):** Interaktive sider bruger `@rendermode @(new InteractiveServerRenderMode(prerender: false))` for at undgå prerender-relaterede data/mapping issues
+- **Prerender-håndtering (.NET 10):** Interaktive sider bruger `@rendermode InteractiveServer` sammen med `[PersistentState]` for at undgå dobbelt datahentning mellem prerender og hydration
 
 **Kørsel:**
 ```bash

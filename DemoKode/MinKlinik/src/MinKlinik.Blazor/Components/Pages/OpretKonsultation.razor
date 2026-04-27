@@ -1,5 +1,5 @@
 @page "/opret-konsultation"
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@rendermode InteractiveServer
 @inject IBehandlingstypeQueries BehandlingstypeQueries
 @inject IPatientQueries PatientQueries
 @inject IBehandlerQueries BehandlerQueries
@@ -42,8 +42,8 @@ else
                 <div class="mb-3">
                     <label for="behandlingstypeSelect" class="form-label">Behandlingstype</label>
                     <InputSelect id="behandlingstypeSelect" @bind-Value="_model.BehandlingstypeId" class="form-select">
-                        <option value="">Vaelg behandlingstype</option>
-                        @foreach (var type in _behandlingstyper)
+                        <option value="">Vælg behandlingstype</option>
+                        @foreach (var type in _behandlingstyper ?? [])
                         {
                             <option value="@type.Id">@type.Navn</option>
                         }
@@ -54,8 +54,8 @@ else
                 <div class="mb-3">
                     <label for="patientSelect" class="form-label">Patient</label>
                     <InputSelect id="patientSelect" @bind-Value="_model.PatientId" class="form-select">
-                        <option value="">Vaelg patient</option>
-                        @foreach (var patient in _patienter)
+                        <option value="">Vælg patient</option>
+                        @foreach (var patient in _patienter ?? [])
                         {
                             <option value="@patient.Id">@patient.Navn</option>
                         }
@@ -66,8 +66,8 @@ else
                 <div class="mb-3">
                     <label for="behandlerSelect" class="form-label">Behandler</label>
                     <InputSelect id="behandlerSelect" @bind-Value="_model.BehandlerId" class="form-select">
-                        <option value="">Vaelg behandler</option>
-                        @foreach (var behandler in _behandlere)
+                        <option value="">Vælg behandler</option>
+                        @foreach (var behandler in _behandlere ?? [])
                         {
                             <option value="@behandler.Id">@behandler.Navn (@behandler.Speciale)</option>
                         }
@@ -93,17 +93,20 @@ else
     private bool _indlaeser = true;
     private string? _fejl;
     private string? _statusbesked;
-    private IReadOnlyList<BehandlingstypeDto> _behandlingstyper = [];
-    private IReadOnlyList<PatientDto> _patienter = [];
-    private IReadOnlyList<BehandlerDto> _behandlere = [];
+    [PersistentState]
+    public IReadOnlyList<BehandlingstypeDto>? _behandlingstyper { get; set; }
+    [PersistentState]
+    public IReadOnlyList<PatientDto>? _patienter { get; set; }
+    [PersistentState]
+    public IReadOnlyList<BehandlerDto>? _behandlere { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            _behandlingstyper = await BehandlingstypeQueries.HentAlleAsync();
-            _patienter = await PatientQueries.HentAlleAsync();
-            _behandlere = await BehandlerQueries.HentAlleAsync();
+            _behandlingstyper ??= await BehandlingstypeQueries.HentAlleAsync();
+            _patienter ??= await PatientQueries.HentAlleAsync();
+            _behandlere ??= await BehandlerQueries.HentAlleAsync();
         }
         catch (Exception ex)
         {

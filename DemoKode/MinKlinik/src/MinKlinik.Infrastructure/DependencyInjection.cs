@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using MinKlinik.Facade.Queries;
 using MinKlinik.Infrastructure.Persistence;
 using MinKlinik.Infrastructure.QueryHandlers;
@@ -24,12 +25,14 @@ public static class InfrastructureServiceCollectionExtensions
     {
         var connectionString = configuration.GetConnectionString("MinKlinikDb");
 
+
         return services.AddInfrastructure(options =>
         {
             if (string.IsNullOrWhiteSpace(connectionString))
                 options.UseInMemoryDatabase("MinKlinikDb");
             else
                 options.UseSqlServer(connectionString);
+
         });
     }
 
@@ -39,7 +42,14 @@ public static class InfrastructureServiceCollectionExtensions
         this IServiceCollection services,
         Action<DbContextOptionsBuilder> configureDb)
     {
-        services.AddDbContext<AppDbContext>(configureDb);
+        services.AddDbContext<AppDbContext>((serviceProvider, options) =>
+        {
+            configureDb(options);
+
+            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+            options.UseLoggerFactory(loggerFactory);
+            options.EnableSensitiveDataLogging(true);
+        });
 
         // Repositories (Use Case-interfaces → Infrastructure-implementeringer)
         services.AddScoped<IKonsultationRepository, KonsultationRepository>();

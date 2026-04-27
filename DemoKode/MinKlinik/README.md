@@ -127,13 +127,18 @@ Frontend routes: `/`, `/stamdata`, `/konsultationer`, `/opret-konsultation`, `/a
 
 ### Blazor prerender (.NET 10)
 
-MinKlinik.Blazor bruger `InteractiveServer`, men prerender er bevidst slået fra på de interaktive pages:
+MinKlinik.Blazor bruger `InteractiveServer` med prerender aktiveret, og cachelagrer initial data med `[PersistentState]`:
 
 ```razor
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
+[PersistentState]
+public IReadOnlyList<KonsultationDto>? _konsultationer { get; set; }
 ```
 
-Det undgår fejl under prerender-fasen, hvor der ellers kan opstå provider-specifikke issues med dataadgang og model-mapping.
+Det undgår dobbelt datahentning mellem prerender og interaktiv render, uden at slå prerender fra.
+
+### Infrastruktur-note
+
+`AddInfrastructure(Action<DbContextOptionsBuilder>)` kalder nu altid `configureDb(options)` før logger-opsætning. Det sikrer korrekt provider-konfiguration (`UseSqlServer`/`UseInMemoryDatabase`) i alle hosts.
 
 **API:**
 
