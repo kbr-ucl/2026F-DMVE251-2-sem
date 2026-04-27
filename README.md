@@ -247,6 +247,7 @@ dotnet test
 - `Facade/` - Interfaces og DTO'er
 - `UseCases/` - Use case-implementeringer
 - `Infrastructure/` - EF Core, Repositories, Query Handlers
+- `Blazor/` - Blazor Web App (Interactive Server pages)
 - `Api/` - ASP.NET Web API med Scalar
 - `Console/` - Konsol-app med menu (alternativ til API)
 
@@ -255,10 +256,14 @@ dotnet test
 - **Factory-metode:** `Konsultation.Opret()` håndhæver overlap-validering i domænet
 - **Value Objects:** `Tidsinterval` som record — ejet af Konsultation
 - **CQS:** Commands returnerer `Task`, Queries returnerer DTO'er
-- **To hosts:** API og Console deler samme Use Cases og Infrastructure
+- **Tre hosts:** Blazor (UI), API og Console deler samme Use Cases og Infrastructure
+- **Prerender-håndtering (.NET 10):** Interaktive sider bruger `@rendermode @(new InteractiveServerRenderMode(prerender: false))` for at undgå prerender-relaterede data/mapping issues
 
 **Kørsel:**
 ```bash
+# Blazor (default startup i MinKlinik.slnx)
+dotnet run --project DemoKode/MinKlinik/src/MinKlinik.Blazor/MinKlinik.Blazor.csproj
+
 # API (Scalar UI: https://localhost:7001/scalar/v1)
 dotnet run --project DemoKode/MinKlinik/src/MinKlinik.Api/MinKlinik.Api.csproj
 
