@@ -1,6 +1,7 @@
 @page "/afslut-konsultation"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
-@inject IKlinikUiService KlinikUiService
+@inject IKonsultationQueries KonsultationQueries
+@inject IAfslutKonsultationUseCase AfslutKonsultationUseCase
 
 <PageTitle>Afslut konsultation</PageTitle>
 
@@ -80,7 +81,7 @@ else
 
         try
         {
-            await KlinikUiService.AfslutKonsultationAsync(
+            await AfslutKonsultationUseCase.Udfør(
                 new AfslutKonsultationRequest(_model.KonsultationId.Value, _model.Notat.Trim()));
 
             _statusbesked = "Konsultation afsluttet.";
@@ -99,7 +100,8 @@ else
         try
         {
             _indlaeser = true;
-            _aktiveKonsultationer = await KlinikUiService.HentAktiveKonsultationerAsync();
+            var alle = await KonsultationQueries.HentAlleAsync();
+            _aktiveKonsultationer = alle.Where(x => x.Status != "Aflyst").ToList();
         }
         catch (Exception ex)
         {

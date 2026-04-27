@@ -1,6 +1,9 @@
 @page "/opret-konsultation"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
-@inject IKlinikUiService KlinikUiService
+@inject IBehandlingstypeQueries BehandlingstypeQueries
+@inject IPatientQueries PatientQueries
+@inject IBehandlerQueries BehandlerQueries
+@inject IOpretKonsultationUseCase OpretKonsultationUseCase
 
 <PageTitle>Opret konsultation</PageTitle>
 
@@ -98,9 +101,9 @@ else
     {
         try
         {
-            _behandlingstyper = await KlinikUiService.HentBehandlingstyperAsync();
-            _patienter = await KlinikUiService.HentPatienterAsync();
-            _behandlere = await KlinikUiService.HentBehandlereAsync();
+            _behandlingstyper = await BehandlingstypeQueries.HentAlleAsync();
+            _patienter = await PatientQueries.HentAlleAsync();
+            _behandlere = await BehandlerQueries.HentAlleAsync();
         }
         catch (Exception ex)
         {
@@ -124,7 +127,7 @@ else
 
         try
         {
-            await KlinikUiService.OpretKonsultationAsync(new OpretKonsultationRequest(
+            await OpretKonsultationUseCase.Udfør(new OpretKonsultationRequest(
                 _model.Fra.Value,
                 _model.Til.Value,
                 _model.BehandlingstypeId.Value,

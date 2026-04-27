@@ -1,6 +1,7 @@
 @page "/aflys-konsultation"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
-@inject IKlinikUiService KlinikUiService
+@inject IKonsultationQueries KonsultationQueries
+@inject IAflysKonsultationUseCase AflysKonsultationUseCase
 
 <PageTitle>Aflys konsultation</PageTitle>
 
@@ -74,7 +75,7 @@ else
 
         try
         {
-            await KlinikUiService.AflysKonsultationAsync(new AflysKonsultationRequest(_model.KonsultationId.Value));
+            await AflysKonsultationUseCase.Udfør(new AflysKonsultationRequest(_model.KonsultationId.Value));
             _statusbesked = "Konsultation aflyst.";
             _model.KonsultationId = null;
             await HentAktiveAsync();
@@ -90,7 +91,8 @@ else
         try
         {
             _indlaeser = true;
-            _aktiveKonsultationer = await KlinikUiService.HentAktiveKonsultationerAsync();
+            var alle = await KonsultationQueries.HentAlleAsync();
+            _aktiveKonsultationer = alle.Where(x => x.Status != "Aflyst").ToList();
         }
         catch (Exception ex)
         {

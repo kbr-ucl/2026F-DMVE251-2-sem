@@ -1,5 +1,4 @@
 using MinKlinik.Blazor.Components;
-using MinKlinik.Blazor.Services;
 using MinKlinik.Infrastructure;
 using MinKlinik.Infrastructure.Persistence;
 
@@ -11,7 +10,6 @@ builder.Services.AddRazorComponents()
 builder.Services
     .AddUseCases()
     .AddInfrastructure(builder.Configuration);
-builder.Services.AddScoped<IKlinikUiService, KlinikUiService>();
 
 var app = builder.Build();
 

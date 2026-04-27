@@ -1,6 +1,6 @@
 @page "/konsultationer"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
-@inject IKlinikUiService KlinikUiService
+@inject IKonsultationQueries KonsultationQueries
 
 <PageTitle>Konsultationer</PageTitle>
 
@@ -32,7 +32,7 @@ else
     {
         try
         {
-            _konsultationer = await KlinikUiService.HentKonsultationerAsync();
+            _konsultationer = await KonsultationQueries.HentAlleAsync();
         }
         catch (Exception ex)
         {

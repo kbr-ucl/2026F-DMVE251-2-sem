@@ -1,6 +1,8 @@
 @page "/stamdata"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
-@inject IKlinikUiService KlinikUiService
+@inject IBehandlingstypeQueries BehandlingstypeQueries
+@inject IPatientQueries PatientQueries
+@inject IBehandlerQueries BehandlerQueries
 
 <PageTitle>Stamdata</PageTitle>
 
@@ -79,9 +81,9 @@ else
     {
         try
         {
-            _behandlingstyper = await KlinikUiService.HentBehandlingstyperAsync();
-            _patienter = await KlinikUiService.HentPatienterAsync();
-            _behandlere = await KlinikUiService.HentBehandlereAsync();
+            _behandlingstyper = await BehandlingstypeQueries.HentAlleAsync();
+            _patienter = await PatientQueries.HentAlleAsync();
+            _behandlere = await BehandlerQueries.HentAlleAsync();
         }
         catch (Exception ex)
         {
