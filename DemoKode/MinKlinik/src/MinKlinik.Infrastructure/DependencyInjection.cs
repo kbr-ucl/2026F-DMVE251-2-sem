@@ -51,7 +51,7 @@ public static class InfrastructureServiceCollectionExtensions
         this IServiceCollection services,
         Action<DbContextOptionsBuilder> configureDb)
     {
-        services.AddDbContext<AppDbContext>((serviceProvider, options) =>
+        services.AddDbContext<AppDbContext>((options) =>
         {
             options.LogTo(Console.WriteLine);
             options.EnableSensitiveDataLogging();
