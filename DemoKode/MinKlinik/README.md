@@ -125,6 +125,16 @@ dotnet run --project src/MinKlinik.Blazor/MinKlinik.Blazor.csproj
 
 Frontend routes: `/`, `/stamdata`, `/konsultationer`, `/opret-konsultation`, `/afslut-konsultation`, `/aflys-konsultation`.
 
+### Blazor prerender (.NET 10)
+
+MinKlinik.Blazor bruger `InteractiveServer`, men prerender er bevidst slået fra på de interaktive pages:
+
+```razor
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+```
+
+Det undgår fejl under prerender-fasen, hvor der ellers kan opstå provider-specifikke issues med dataadgang og model-mapping.
+
 **API:**
 
 ```bash

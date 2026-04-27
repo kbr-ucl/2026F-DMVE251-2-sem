@@ -1,5 +1,5 @@
 @page "/stamdata"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @inject IKlinikUiService KlinikUiService
 
 <PageTitle>Stamdata</PageTitle>
