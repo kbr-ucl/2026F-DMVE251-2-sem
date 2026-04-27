@@ -1,7 +1,8 @@
 <Solution>
   <Folder Name="/src/">
-    <Project DefaultStartup="true" Path="src/MinKlinik.Console/MinKlinik.Console.csproj" />
+    <Project Path="src/MinKlinik.Console/MinKlinik.Console.csproj" />
     <Project Path="src/MinKlinik.Api/MinKlinik.Api.csproj" />
+    <Project DefaultStartup="true" Path="src/MinKlinik.Blazor/MinKlinik.Blazor.csproj" />
     <Project Path="src/MinKlinik.Domain/MinKlinik.Domain.csproj" />
     <Project Path="src/MinKlinik.Facade/MinKlinik.Facade.csproj" />
     <Project Path="src/MinKlinik.Infrastructure/MinKlinik.Infrastructure.csproj" />
