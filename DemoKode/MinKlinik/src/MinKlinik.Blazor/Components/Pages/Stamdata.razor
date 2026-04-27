@@ -1,0 +1,95 @@
+@page "/stamdata"
+@rendermode InteractiveServer
+@inject IKlinikUiService KlinikUiService
+
+<PageTitle>Stamdata</PageTitle>
+
+<h2>Stamdata</h2>
+
+@if (_fejl is not null)
+{
+    <p class="text-danger">@_fejl</p>
+}
+else if (_indlaeser)
+{
+    <p>Indlaeser stamdata...</p>
+}
+else
+{
+    <section>
+        <h3>Behandlingstyper</h3>
+        @if (_behandlingstyper.Count == 0)
+        {
+            <p>Ingen behandlingstyper.</p>
+        }
+        else
+        {
+            <ul>
+                @foreach (var type in _behandlingstyper)
+                {
+                    <li>@type.Navn</li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section>
+        <h3>Patienter</h3>
+        @if (_patienter.Count == 0)
+        {
+            <p>Ingen patienter.</p>
+        }
+        else
+        {
+            <ul>
+                @foreach (var patient in _patienter)
+                {
+                    <li>@patient.Navn</li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section>
+        <h3>Behandlere</h3>
+        @if (_behandlere.Count == 0)
+        {
+            <p>Ingen behandlere.</p>
+        }
+        else
+        {
+            <ul>
+                @foreach (var behandler in _behandlere)
+                {
+                    <li>@behandler.Navn (@behandler.Speciale)</li>
+                }
+            </ul>
+        }
+    </section>
+}
+
+@code {
+    private bool _indlaeser = true;
+    private string? _fejl;
+    private IReadOnlyList<BehandlingstypeDto> _behandlingstyper = [];
+    private IReadOnlyList<PatientDto> _patienter = [];
+    private IReadOnlyList<BehandlerDto> _behandlere = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _behandlingstyper = await KlinikUiService.HentBehandlingstyperAsync();
+            _patienter = await KlinikUiService.HentPatienterAsync();
+            _behandlere = await KlinikUiService.HentBehandlereAsync();
+        }
+        catch (Exception ex)
+        {
+            _fejl = ex.Message;
+        }
+        finally
+        {
+            _indlaeser = false;
+        }
+    }
+}

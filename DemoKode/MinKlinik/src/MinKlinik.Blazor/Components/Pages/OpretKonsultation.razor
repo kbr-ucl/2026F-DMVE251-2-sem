@@ -1,0 +1,141 @@
+@page "/opret-konsultation"
+@rendermode InteractiveServer
+@inject IKlinikUiService KlinikUiService
+
+<PageTitle>Opret konsultation</PageTitle>
+
+<h2>Opret konsultation</h2>
+
+@if (_fejl is not null)
+{
+    <p class="text-danger">@_fejl</p>
+}
+else if (_indlaeser)
+{
+    <p>Indlaeser stamdata...</p>
+}
+else
+{
+    <section>
+        <EditForm Model="_model" OnValidSubmit="OnValidSubmitAsync" FormName="opret-konsultation-form">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <fieldset>
+                <legend>Ny konsultation</legend>
+
+                <div class="mb-3">
+                    <label for="fraInput" class="form-label">Fra</label>
+                    <InputDate id="fraInput" Type="InputDateType.DateTimeLocal" @bind-Value="_model.Fra" class="form-control" />
+                    <ValidationMessage For="() => _model.Fra" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="tilInput" class="form-label">Til</label>
+                    <InputDate id="tilInput" Type="InputDateType.DateTimeLocal" @bind-Value="_model.Til" class="form-control" />
+                    <ValidationMessage For="() => _model.Til" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="behandlingstypeSelect" class="form-label">Behandlingstype</label>
+                    <InputSelect id="behandlingstypeSelect" @bind-Value="_model.BehandlingstypeId" class="form-select">
+                        <option value="">Vaelg behandlingstype</option>
+                        @foreach (var type in _behandlingstyper)
+                        {
+                            <option value="@type.Id">@type.Navn</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => _model.BehandlingstypeId" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="patientSelect" class="form-label">Patient</label>
+                    <InputSelect id="patientSelect" @bind-Value="_model.PatientId" class="form-select">
+                        <option value="">Vaelg patient</option>
+                        @foreach (var patient in _patienter)
+                        {
+                            <option value="@patient.Id">@patient.Navn</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => _model.PatientId" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="behandlerSelect" class="form-label">Behandler</label>
+                    <InputSelect id="behandlerSelect" @bind-Value="_model.BehandlerId" class="form-select">
+                        <option value="">Vaelg behandler</option>
+                        @foreach (var behandler in _behandlere)
+                        {
+                            <option value="@behandler.Id">@behandler.Navn (@behandler.Speciale)</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => _model.BehandlerId" />
+                </div>
+
+                <button class="btn btn-primary" type="submit">Opret</button>
+            </fieldset>
+        </EditForm>
+    </section>
+
+    <section aria-live="polite" class="mt-3">
+        @if (_statusbesked is not null)
+        {
+            <p>@_statusbesked</p>
+        }
+    </section>
+}
+
+@code {
+    private readonly OpretKonsultationInputModel _model = new();
+    private bool _indlaeser = true;
+    private string? _fejl;
+    private string? _statusbesked;
+    private IReadOnlyList<BehandlingstypeDto> _behandlingstyper = [];
+    private IReadOnlyList<PatientDto> _patienter = [];
+    private IReadOnlyList<BehandlerDto> _behandlere = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _behandlingstyper = await KlinikUiService.HentBehandlingstyperAsync();
+            _patienter = await KlinikUiService.HentPatienterAsync();
+            _behandlere = await KlinikUiService.HentBehandlereAsync();
+        }
+        catch (Exception ex)
+        {
+            _fejl = ex.Message;
+        }
+        finally
+        {
+            _indlaeser = false;
+        }
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        _statusbesked = null;
+        _fejl = null;
+
+        if (_model.Fra is null || _model.Til is null || _model.BehandlingstypeId is null || _model.PatientId is null || _model.BehandlerId is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await KlinikUiService.OpretKonsultationAsync(new OpretKonsultationRequest(
+                _model.Fra.Value,
+                _model.Til.Value,
+                _model.BehandlingstypeId.Value,
+                _model.PatientId.Value,
+                _model.BehandlerId.Value));
+
+            _statusbesked = "Konsultation oprettet.";
+        }
+        catch (Exception ex)
+        {
+            _fejl = ex.Message;
+        }
+    }
+}

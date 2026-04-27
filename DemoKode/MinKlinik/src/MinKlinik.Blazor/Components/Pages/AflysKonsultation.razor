@@ -1,0 +1,108 @@
+@page "/aflys-konsultation"
+@rendermode InteractiveServer
+@inject IKlinikUiService KlinikUiService
+
+<PageTitle>Aflys konsultation</PageTitle>
+
+<h2>Aflys konsultation</h2>
+
+@if (_fejl is not null)
+{
+    <p class="text-danger">@_fejl</p>
+}
+else if (_indlaeser)
+{
+    <p>Indlaeser konsultationer...</p>
+}
+else if (_aktiveKonsultationer.Count == 0)
+{
+    <p>Ingen aktive konsultationer.</p>
+}
+else
+{
+    <section>
+        <EditForm Model="_model" OnValidSubmit="OnValidSubmitAsync" FormName="aflys-konsultation-form">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <fieldset>
+                <legend>Aflys konsultation</legend>
+
+                <div class="mb-3">
+                    <label for="konsultationSelect" class="form-label">Konsultation</label>
+                    <InputSelect id="konsultationSelect" @bind-Value="_model.KonsultationId" class="form-select">
+                        <option value="">Vaelg konsultation</option>
+                        @foreach (var konsultation in _aktiveKonsultationer)
+                        {
+                            <option value="@konsultation.Id">
+                                @konsultation.Fra.ToString("yyyy-MM-dd HH:mm") - @konsultation.PatientNavn - @konsultation.BehandlerNavn (@konsultation.Status)
+                            </option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => _model.KonsultationId" />
+                </div>
+
+                <button class="btn btn-warning" type="submit">Aflys</button>
+            </fieldset>
+        </EditForm>
+    </section>
+
+    <section aria-live="polite" class="mt-3">
+        @if (_statusbesked is not null)
+        {
+            <p>@_statusbesked</p>
+        }
+    </section>
+}
+
+@code {
+    private readonly AflysKonsultationInputModel _model = new();
+    private bool _indlaeser = true;
+    private string? _fejl;
+    private string? _statusbesked;
+    private IReadOnlyList<KonsultationDto> _aktiveKonsultationer = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await HentAktiveAsync();
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        _statusbesked = null;
+        _fejl = null;
+        if (_model.KonsultationId is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await KlinikUiService.AflysKonsultationAsync(new AflysKonsultationRequest(_model.KonsultationId.Value));
+            _statusbesked = "Konsultation aflyst.";
+            _model.KonsultationId = null;
+            await HentAktiveAsync();
+        }
+        catch (Exception ex)
+        {
+            _fejl = ex.Message;
+        }
+    }
+
+    private async Task HentAktiveAsync()
+    {
+        try
+        {
+            _indlaeser = true;
+            _aktiveKonsultationer = await KlinikUiService.HentAktiveKonsultationerAsync();
+        }
+        catch (Exception ex)
+        {
+            _fejl = ex.Message;
+        }
+        finally
+        {
+            _indlaeser = false;
+        }
+    }
+}

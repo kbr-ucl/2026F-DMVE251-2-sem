@@ -1,0 +1,83 @@
+.app-shell {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        "header header"
+        "nav main"
+        "footer footer";
+}
+
+.app-header {
+    grid-area: header;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f8fafc;
+}
+
+.app-header h1 {
+    margin: 0;
+    font-size: 1.7rem;
+}
+
+.app-header p {
+    margin: 0.3rem 0 0;
+    color: #4b5563;
+}
+
+.app-nav {
+    grid-area: nav;
+    border-right: 1px solid #e5e7eb;
+    padding: 1rem;
+}
+
+.app-main {
+    grid-area: main;
+    padding: 1rem 1.5rem 1.5rem;
+}
+
+.app-footer {
+    grid-area: footer;
+    border-top: 1px solid #e5e7eb;
+    padding: 0.6rem 1.5rem;
+    color: #4b5563;
+}
+
+@media (max-width: 900px) {
+    .app-shell {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto 1fr auto;
+        grid-template-areas:
+            "header"
+            "nav"
+            "main"
+            "footer";
+    }
+
+    .app-nav {
+        border-right: 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+}
+
+#blazor-error-ui {
+    color-scheme: light only;
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }

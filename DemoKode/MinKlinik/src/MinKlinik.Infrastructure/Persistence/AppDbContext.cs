@@ -18,8 +18,20 @@ public class AppDbContext : DbContext
         {
             b.HasKey(k => k.Id);
 
-            // Tidsinterval er et Value Object → map som ComplexProperty med ToJson()
-            b.ComplexProperty(k => k.Tidspunkt, t => t.ToJson());
+            // InMemory: brug OwnsOne for at undga metadata-fejl med complex mapping.
+            // Relationelle providere: behold JSON mapping via ComplexProperty + ToJson.
+            if (Database.IsInMemory())
+            {
+                b.OwnsOne(k => k.Tidspunkt, t =>
+                {
+                    t.Property(x => x.Fra).IsRequired();
+                    t.Property(x => x.Til).IsRequired();
+                });
+            }
+            else
+            {
+                b.ComplexProperty(k => k.Tidspunkt, t => t.ToJson());
+            }
 
             // Status som string i databasen
             b.Property(k => k.Status).HasConversion<string>();

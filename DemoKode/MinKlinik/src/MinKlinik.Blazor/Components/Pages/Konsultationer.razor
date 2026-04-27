@@ -1,0 +1,73 @@
+@page "/konsultationer"
+@rendermode InteractiveServer
+@inject IKlinikUiService KlinikUiService
+
+<PageTitle>Konsultationer</PageTitle>
+
+<h2>Konsultationer</h2>
+
+@if (_fejl is not null)
+{
+    <p class="text-danger">@_fejl</p>
+}
+else if (_indlaeser)
+{
+    <p>Indlaeser konsultationer...</p>
+}
+else if (_konsultationer.Count == 0)
+{
+    <p>(ingen)</p>
+}
+else
+{
+    <section>
+        <table class="table table-striped">
+            <caption>Alle konsultationer</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Fra</th>
+                    <th scope="col">Til</th>
+                    <th scope="col">Patient</th>
+                    <th scope="col">Behandler</th>
+                    <th scope="col">Behandlingstype</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var konsultation in _konsultationer)
+                {
+                    <tr>
+                        <td>@konsultation.Fra.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@konsultation.Til.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@konsultation.PatientNavn</td>
+                        <td>@konsultation.BehandlerNavn</td>
+                        <td>@konsultation.BehandlingstypeNavn</td>
+                        <td>@konsultation.Status</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+}
+
+@code {
+    private bool _indlaeser = true;
+    private string? _fejl;
+    private IReadOnlyList<KonsultationDto> _konsultationer = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _konsultationer = await KlinikUiService.HentKonsultationerAsync();
+        }
+        catch (Exception ex)
+        {
+            _fejl = ex.Message;
+        }
+        finally
+        {
+            _indlaeser = false;
+        }
+    }
+}

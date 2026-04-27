@@ -27,6 +27,7 @@ MinKlinik/
 │   ├── MinKlinik.UseCases/          # Use Case-klasser + Repository-interfaces
 │   ├── MinKlinik.Infrastructure/    # EF Core, Repositories, Query Handlers, SeedData
 │   ├── MinKlinik.Api/               # ASP.NET Web API + Scalar
+│   ├── MinKlinik.Blazor/            # Blazor frontend (InteractiveServer pages)
 │   └── MinKlinik.Console/           # Konsol-app (menu-drevet) — alternativ til API
 │
 └── tests/
@@ -116,6 +117,14 @@ var konsultation = Konsultation.Opret(
 
 ## Kør projektet
 
+**Blazor (default startup i `MinKlinik.slnx`):**
+
+```bash
+dotnet run --project src/MinKlinik.Blazor/MinKlinik.Blazor.csproj
+```
+
+Frontend routes: `/`, `/stamdata`, `/konsultationer`, `/opret-konsultation`, `/afslut-konsultation`, `/aflys-konsultation`.
+
 **API:**
 
 ```bash
@@ -155,7 +164,7 @@ dotnet test
 
 ## Nøgleprincipper demonstreret
 
-- **To hosts**: API (HTTP) og Console (menu) deler samme DI, Use Cases og Infrastructure
+- **Tre hosts**: Blazor (UI), API (HTTP) og Console (menu) deler samme DI, Use Cases og Infrastructure
 - **Entity / AggregateRoot base classes**: Eksplicit markering af domæneroller
 - **4 identificerede Aggregate Roots**: Konsultation, Patient, Behandler, Behandlingstype
 - **Static factory-metode**: `Konsultation.Opret()` håndhæver overlap som generel forretningsregel
