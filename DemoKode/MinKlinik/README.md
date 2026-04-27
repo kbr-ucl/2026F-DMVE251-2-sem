@@ -125,16 +125,30 @@ dotnet run --project src/MinKlinik.Blazor/MinKlinik.Blazor.csproj
 
 Frontend routes: `/`, `/stamdata`, `/konsultationer`, `/opret-konsultation`, `/afslut-konsultation`, `/aflys-konsultation`.
 
-### Blazor prerender (.NET 10)
+### Blazor Interactive Server (.NET 10)
 
-MinKlinik.Blazor bruger `InteractiveServer` med prerender aktiveret, og cachelagrer initial data med `[PersistentState]`:
+Siderne under `Components/Pages` bruger **Interactive Server uden prerender**:
+
+```razor
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+```
+
+Så kører siden først som fuldt interaktiv (ingen statisk prerender-fase), hvilket undgår typiske problemer med scoped services og datahentning under prerender.
+
+Lister der hentes i `OnInitializedAsync` er markeret med **`[PersistentState]`** og tildeles med null-coalescing assignment (`??=`), så navngivning matcher domænet og hydration kan genbruge persisted state hvor det understøttes:
 
 ```razor
 [PersistentState]
-public IReadOnlyList<KonsultationDto>? _konsultationer { get; set; }
+public IReadOnlyList<PatientDto>? Patienter { get; set; }
+
+protected override async Task OnInitializedAsync()
+{
+    Patienter ??= await PatientQueries.HentAlleAsync();
+    // ...
+}
 ```
 
-Det undgår dobbelt datahentning mellem prerender og interaktiv render, uden at slå prerender fra.
+**Navngivning:** Brug PascalCase på properties (som Stamdata). Siden `Konsultationer.razor` kan ikke have en property der hedder `Konsultationer` (samme navn som den genererede komponentklasse → CS0542); der bruges f.eks. `Konsultationerne`.
 
 ### Infrastruktur-note
 
@@ -180,6 +194,7 @@ dotnet test
 ## Nøgleprincipper demonstreret
 
 - **Tre hosts**: Blazor (UI), API (HTTP) og Console (menu) deler samme DI, Use Cases og Infrastructure
+- **Blazor**: Interactive Server med `prerender: false`; liste-data med `[PersistentState]` og `??=` i `OnInitializedAsync`
 - **Entity / AggregateRoot base classes**: Eksplicit markering af domæneroller
 - **4 identificerede Aggregate Roots**: Konsultation, Patient, Behandler, Behandlingstype
 - **Static factory-metode**: `Konsultation.Opret()` håndhæver overlap som generel forretningsregel

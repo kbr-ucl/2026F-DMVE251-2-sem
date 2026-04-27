@@ -1,5 +1,5 @@
 @page "/afslut-konsultation"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @inject IKonsultationQueries KonsultationQueries
 @inject IAfslutKonsultationUseCase AfslutKonsultationUseCase
 
@@ -15,7 +15,7 @@ else if (_indlaeser)
 {
     <p>Indlaeser konsultationer...</p>
 }
-else if ((_aktiveKonsultationer?.Count ?? 0) == 0)
+else if ((AktiveKonsultationer?.Count ?? 0) == 0)
 {
     <p>Ingen aktive konsultationer.</p>
 }
@@ -32,7 +32,7 @@ else
                 <div class="mb-3">
                     <label for="konsultationSelect" class="form-label">Konsultation</label>
                     <KonsultationSelect Id="konsultationSelect"
-                                        Konsultationer="_aktiveKonsultationer ?? []"
+                                        Konsultationer="AktiveKonsultationer ?? []"
                                         Value="_model.KonsultationId"
                                         ValueChanged="@(value => _model.KonsultationId = value)"
                                         ValueExpression="() => _model.KonsultationId" />
@@ -64,7 +64,7 @@ else
     private string? _fejl;
     private string? _statusbesked;
     [PersistentState]
-    public IReadOnlyList<KonsultationDto>? _aktiveKonsultationer { get; set; }
+    public IReadOnlyList<KonsultationDto>? AktiveKonsultationer { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -88,6 +88,7 @@ else
             _statusbesked = "Konsultation afsluttet.";
             _model.Notat = string.Empty;
             _model.KonsultationId = null;
+            AktiveKonsultationer = null;
             await HentAktiveAsync();
         }
         catch (Exception ex)
@@ -101,10 +102,10 @@ else
         try
         {
             _indlaeser = true;
-            if (_aktiveKonsultationer is null)
+            if (AktiveKonsultationer is null)
             {
                 var alle = await KonsultationQueries.HentAlleAsync();
-                _aktiveKonsultationer = alle.Where(x => x.Status != "Aflyst").ToList();
+                AktiveKonsultationer = alle.Where(x => x.Status != "Aflyst").ToList();
             }
         }
         catch (Exception ex)

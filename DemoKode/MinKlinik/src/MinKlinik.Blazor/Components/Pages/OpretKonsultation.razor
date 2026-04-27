@@ -1,5 +1,5 @@
 @page "/opret-konsultation"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @inject IBehandlingstypeQueries BehandlingstypeQueries
 @inject IPatientQueries PatientQueries
 @inject IBehandlerQueries BehandlerQueries
@@ -43,7 +43,7 @@ else
                     <label for="behandlingstypeSelect" class="form-label">Behandlingstype</label>
                     <InputSelect id="behandlingstypeSelect" @bind-Value="_model.BehandlingstypeId" class="form-select">
                         <option value="">Vælg behandlingstype</option>
-                        @foreach (var type in _behandlingstyper ?? [])
+                        @foreach (var type in Behandlingstyper ?? [])
                         {
                             <option value="@type.Id">@type.Navn</option>
                         }
@@ -55,7 +55,7 @@ else
                     <label for="patientSelect" class="form-label">Patient</label>
                     <InputSelect id="patientSelect" @bind-Value="_model.PatientId" class="form-select">
                         <option value="">Vælg patient</option>
-                        @foreach (var patient in _patienter ?? [])
+                        @foreach (var patient in Patienter ?? [])
                         {
                             <option value="@patient.Id">@patient.Navn</option>
                         }
@@ -67,7 +67,7 @@ else
                     <label for="behandlerSelect" class="form-label">Behandler</label>
                     <InputSelect id="behandlerSelect" @bind-Value="_model.BehandlerId" class="form-select">
                         <option value="">Vælg behandler</option>
-                        @foreach (var behandler in _behandlere ?? [])
+                        @foreach (var behandler in Behandlere ?? [])
                         {
                             <option value="@behandler.Id">@behandler.Navn (@behandler.Speciale)</option>
                         }
@@ -94,19 +94,19 @@ else
     private string? _fejl;
     private string? _statusbesked;
     [PersistentState]
-    public IReadOnlyList<BehandlingstypeDto>? _behandlingstyper { get; set; }
+    public IReadOnlyList<BehandlingstypeDto>? Behandlingstyper { get; set; }
     [PersistentState]
-    public IReadOnlyList<PatientDto>? _patienter { get; set; }
+    public IReadOnlyList<PatientDto>? Patienter { get; set; }
     [PersistentState]
-    public IReadOnlyList<BehandlerDto>? _behandlere { get; set; }
+    public IReadOnlyList<BehandlerDto>? Behandlere { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            _behandlingstyper ??= await BehandlingstypeQueries.HentAlleAsync();
-            _patienter ??= await PatientQueries.HentAlleAsync();
-            _behandlere ??= await BehandlerQueries.HentAlleAsync();
+            Behandlingstyper ??= await BehandlingstypeQueries.HentAlleAsync();
+            Patienter ??= await PatientQueries.HentAlleAsync();
+            Behandlere ??= await BehandlerQueries.HentAlleAsync();
         }
         catch (Exception ex)
         {

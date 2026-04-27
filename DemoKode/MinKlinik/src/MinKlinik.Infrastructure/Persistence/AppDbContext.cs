@@ -20,7 +20,7 @@ public class AppDbContext : DbContext
 
             // InMemory: brug OwnsOne for at undga metadata-fejl med complex mapping.
             // Relationelle providere: behold JSON mapping via ComplexProperty + ToJson.
-            if (Database.IsInMemory())
+            if (Database.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite")
             {
                 b.OwnsOne(k => k.Tidspunkt, t =>
                 {

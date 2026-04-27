@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
 using MinKlinik.Facade.Queries;
 using MinKlinik.Infrastructure.Persistence;
 using MinKlinik.Infrastructure.QueryHandlers;
@@ -24,14 +26,23 @@ public static class InfrastructureServiceCollectionExtensions
     {
         var connectionString = configuration.GetConnectionString("MinKlinikDb");
 
-
-        return services.AddInfrastructure(options =>
+        if (!string.IsNullOrWhiteSpace(connectionString))
         {
-            if (string.IsNullOrWhiteSpace(connectionString))
-                options.UseInMemoryDatabase("MinKlinikDb");
-            else
-                options.UseSqlServer(connectionString);
+            return services.AddInfrastructure(options => options.UseSqlServer(connectionString));
+        }
+
+        // SQLite in-memory kræver en åben forbindelse for at databasen lever på tværs af scopes.
+        var sqliteConnection = new SqliteConnection("DataSource=:memory:");
+        sqliteConnection.Open();
+        services.AddSingleton(sqliteConnection);
+
+        services.AddDbContext<AppDbContext>((serviceProvider, options) =>
+        {
+            options.UseSqlite(serviceProvider.GetRequiredService<SqliteConnection>());
         });
+
+        RegisterRepositoriesAndQueries(services);
+        return services;
     }
 
     // Overload 2: Kalderen bestemmer selv hvordan DbContext'en opsættes.
@@ -48,6 +59,12 @@ public static class InfrastructureServiceCollectionExtensions
             configureDb(options);
         });
 
+        RegisterRepositoriesAndQueries(services);
+        return services;
+    }
+
+    private static void RegisterRepositoriesAndQueries(IServiceCollection services)
+    {
         // Repositories (Use Case-interfaces → Infrastructure-implementeringer)
         services.AddScoped<IKonsultationRepository, KonsultationRepository>();
         services.AddScoped<IBehandlingstypeRepository, BehandlingstypeRepository>();
@@ -59,7 +76,5 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IBehandlingstypeQueries, BehandlingstypeQueriesImpl>();
         services.AddScoped<IPatientQueries, PatientQueriesImpl>();
         services.AddScoped<IBehandlerQueries, BehandlerQueriesImpl>();
-
-        return services;
     }
 }

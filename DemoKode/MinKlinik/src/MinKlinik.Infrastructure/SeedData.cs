@@ -11,6 +11,8 @@ public class SeedData
 {
     public void Initialize(AppDbContext db)
     {
+        db.Database.EnsureCreated();
+
         if (db.Behandlingstyper.Any()) return;
 
         var undersøgelse = new Behandlingstype("Undersøgelse");
