@@ -26,13 +26,13 @@ else
 
                 <div class="mb-3">
                     <label for="fraInput" class="form-label">Fra</label>
-                    <InputDate id="fraInput" @bind-Value="_model.Fra" class="form-control" />
+                    <InputDate id="fraInput" Type="InputDateType.DateTimeLocal" @bind-Value="_model.Fra" class="form-control" />
                     <ValidationMessage For="() => _model.Fra" />
                 </div>
 
                 <div class="mb-3">
                     <label for="tilInput" class="form-label">Til</label>
-                    <InputDate id="tilInput" @bind-Value="_model.Til" class="form-control" />
+                    <InputDate id="tilInput" Type="InputDateType.DateTimeLocal" @bind-Value="_model.Til" class="form-control" />
                     <ValidationMessage For="() => _model.Til" />
                 </div>
 
