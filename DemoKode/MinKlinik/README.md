@@ -1,7 +1,52 @@
-# MinKlinik — Clean Architecture Demo
+# MinKlinik — reference-implementation til *Software der holder*
 
-Et klinik-bookingsystem bygget med Clean Architecture, DDD, Facade-lag og CQS.  
-Undervisningsmateriale til 2026F-DMVE251-2-sem, uge 9–12.
+Et klinik-bookingsystem bygget med Clean Architecture, DDD, Facade-lag og CQS i C# 13 / .NET 10. **MinKlinik er det gennemgående eksempel i lærebogen *Software der holder — Professionel C#-udvikling med Clean Architecture, DDD og parallelisme*** (Bromose Publishing, 2026, ISBN 978-87-976951-1-1).
+
+Bogen forklarer *hvorfor* — denne kode viser *hvordan*. Repo'et er versionsstyret med ét tag pr. kapitel (`kap-01` … `kap-25`), så du kan checke kodebasens tilstand ud som den ser ud ved hvert kapitels afslutning.
+
+## Hvordan bruger du repo'et?
+
+```bash
+git clone https://github.com/bromose/minklinik.git
+cd minklinik
+
+# Se den færdige kodebase (alle 25 kapitler implementeret)
+git checkout main
+
+# Eller hop til en bestemt kapitel-tilstand
+git checkout kap-08    # som koden ser ud efter kapitel 8 (DDD-pakke afsluttet)
+git checkout kap-12    # efter kapitel 12 (EF Core 10 introduceret)
+git checkout kap-25    # færdig version (samme som main)
+
+# Kør build og tests
+dotnet build
+dotnet test
+
+# Kør én af host-applikationerne
+dotnet run --project src/MinKlinik.Console
+dotnet run --project src/MinKlinik.Api
+dotnet run --project src/MinKlinik.Blazor
+```
+
+> **Læs bogen først.** Repo'et er en *reference-implementation*, ikke en tutorial. Bogens kapitler introducerer koncepterne trin for trin; her ser du resultatet samlet. Hvis du ikke har bogen, så start på `leanpub.com/software-der-holder`.
+
+## Tag-konvention
+
+| Tag | Tilstand | Bog-kapitel |
+|-----|----------|-------------|
+| `kap-01` | Indkapsling, kohæsion, kobling — Konsultation med `private set` + guard clauses | Kapitel 1 |
+| `kap-02` | + SRP, OCP, ISP refaktorering | Kapitel 2 |
+| `kap-03` | + DIP og IoC-container | Kapitel 3 |
+| ... | ... | ... |
+| `kap-25` | Færdig version — samme som `main` | Kapitel 25 |
+
+Detaljeret tag-strategi og acceptkriterier pr. kapitel ligger i `docs/BOG-KODE-PLAN.md`.
+
+## Licens
+
+Koden i dette repository er udgivet under **MIT License** (se `LICENSE`). Det betyder at du frit kan klone, modificere, bruge og distribuere koden — også i kommercielle produkter — så længe copyright-noten bevares.
+
+> **Bemærk:** MIT-licensen gælder *kun koden i dette repository*. Lærebogen *Software der holder* (manuskript, kapitler, øvelser, bilag) er separat copyright © 2026 Kaj Bromose, alle rettigheder forbeholdes, og udgives via Bromose Publishing på LeanPub. Køb af bogen er ikke en forudsætning for at bruge koden.
 
 ## Arkitektur
 
