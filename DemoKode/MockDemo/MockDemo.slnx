@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="BusinessLogic.Test/BusinessLogic.Test.csproj" />
+  <Project Path="BusinessLogic/BusinessLogic.csproj" />
+</Solution>
