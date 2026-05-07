@@ -9,7 +9,7 @@ public class BeregnPrisService
         // Afhængigheden injiceres, så servicen kan testes med en mock i stedet for den rigtige rabatservice.
         _beregnRabatService = beregnRabatService;
     }
-    public double BeregnPrisMedRabat(double pris, double beregnRabatProcent)
+    public double BeregnPrisMedRabat(double pris)
     {
         // Rabatten hentes fra afhængigheden. I testen bestemmer mocken denne værdi.
         var rabatProcent = _beregnRabatService.BeregnRabatProcent(pris);

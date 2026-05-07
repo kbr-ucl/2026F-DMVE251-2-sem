@@ -92,7 +92,7 @@ var rabatProcent = 25;
 var expected = 150;
 
 // Act
-var actual = service.BeregnPrisMedRabat(pris, 0);
+var actual = service.BeregnPrisMedRabat(pris);
 
 // Assert
 Assert.Equal(expected, actual);

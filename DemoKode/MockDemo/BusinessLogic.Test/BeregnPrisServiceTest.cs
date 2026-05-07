@@ -22,7 +22,7 @@ public class BeregnPrisServiceTest
         var service = new BeregnPrisService(beregnRabatServiceMock.Object);
 
         // Act
-        var actual = service.BeregnPrisMedRabat(pris, 0);
+        var actual = service.BeregnPrisMedRabat(pris);
 
         // Assert
         Assert.Equal(expected, actual);
