@@ -17,87 +17,123 @@ if (!File.Exists(dbPath))
 
 var connectionString = $"Data Source={dbPath}";
 
-var services = new ServiceCollection();
-services.AddDbContext<NorthwindDbContext>(
-    options => options.UseSqlite(connectionString),
-    ServiceLifetime.Singleton);
-services.AddSingleton<CustomerStatsTask>();
-
-await using var provider = services.BuildServiceProvider();
-var task = provider.GetRequiredService<CustomerStatsTask>();
-
-Console.WriteLine("Parallel EF demo — shared DbContext, all queries AsNoTracking");
 Console.WriteLine($"Database: {dbPath}");
-Console.WriteLine($"Tasks: {TaskCount}, MaxDegreeOfParallelism: {Environment.ProcessorCount}");
+Console.WriteLine($"Tasks per variant: {TaskCount}, MaxDegreeOfParallelism: {Environment.ProcessorCount}");
 Console.WriteLine();
 
-Console.WriteLine("Warmup (single call on main thread)...");
-try
+var variantASuccess = await RunSharedContextVariantAsync(connectionString);
+Console.WriteLine();
+var variantBSuccess = await RunFactoryVariantAsync(connectionString);
+
+return variantBSuccess ? 0 : 1;
+
+static async Task<bool> RunSharedContextVariantAsync(string connectionString)
 {
-    var warmup = await task.ExecuteAsync();
-    Console.WriteLine($"  OK: {warmup.CustomerId} / {warmup.CompanyName} / orders={warmup.OrderCount} / sum={warmup.TotalOrderSum:N2}");
+    var services = new ServiceCollection();
+    services.AddDbContext<NorthwindDbContext>(
+        options => options.UseSqlite(connectionString),
+        ServiceLifetime.Singleton);
+    services.AddSingleton<CustomerStatsTask>();
+
+    await using var provider = services.BuildServiceProvider();
+    var task = provider.GetRequiredService<CustomerStatsTask>();
+
+    return await RunParallelDemoAsync(
+        "Variant A: Shared DbContext (singleton)",
+        () => task.ExecuteAsync());
 }
-catch (Exception ex)
+
+static async Task<bool> RunFactoryVariantAsync(string connectionString)
 {
-    PrintException("Warmup failed", ex);
-    return 1;
+    var services = new ServiceCollection();
+    services.AddDbContextFactory<NorthwindDbContext>(
+        options => options.UseSqlite(connectionString));
+    services.AddSingleton<CustomerStatsFactoryTask>();
+
+    await using var provider = services.BuildServiceProvider();
+    var task = provider.GetRequiredService<CustomerStatsFactoryTask>();
+
+    return await RunParallelDemoAsync(
+        "Variant B: DbContext Factory (one context per iteration)",
+        () => task.ExecuteAsync());
 }
-Console.WriteLine();
 
-var results = new ConcurrentBag<CustomerStatsDto>();
-var errors = new ConcurrentBag<Exception>();
-
-var parallelTimer = Stopwatch.StartNew();
-Parallel.For(
-    0,
-    TaskCount,
-    new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
-    _ =>
-    {
-        try
-        {
-            var stats = task.ExecuteAsync().GetAwaiter().GetResult();
-            results.Add(stats);
-        }
-        catch (Exception ex)
-        {
-            errors.Add(ex);
-        }
-    });
-parallelTimer.Stop();
-
-Console.WriteLine($"Parallel finished in {parallelTimer.ElapsedMilliseconds} ms");
-Console.WriteLine($"  Success: {results.Count}/{TaskCount}");
-Console.WriteLine($"  Failed:  {errors.Count}/{TaskCount}");
-Console.WriteLine();
-
-if (results.Count > 0)
+static async Task<bool> RunParallelDemoAsync(
+    string title,
+    Func<Task<CustomerStatsDto>> execute)
 {
-    Console.WriteLine("Sample results (first 5):");
-    foreach (var r in results.Take(5))
-        Console.WriteLine($"  {r.CustomerId,-6} {r.CompanyName,-30} orders={r.OrderCount,4} sum={r.TotalOrderSum,12:N2}");
+    Console.WriteLine($"=== {title} ===");
+    Console.WriteLine("All queries use AsNoTracking.");
     Console.WriteLine();
-}
 
-if (errors.Count > 0)
-{
-    Console.WriteLine("Errors by type:");
-    foreach (var group in errors.GroupBy(e => e.GetType().Name).OrderByDescending(g => g.Count()))
+    Console.WriteLine("Warmup (single call on main thread)...");
+    try
     {
-        var sample = group.First();
-        Console.WriteLine($"  {group.Key}: {group.Count()}");
-        Console.WriteLine($"    {sample.Message}");
-        var inner = sample.InnerException;
-        while (inner != null)
-        {
-            Console.WriteLine($"    -> {inner.GetType().Name}: {inner.Message}");
-            inner = inner.InnerException;
-        }
+        var warmup = await execute();
+        Console.WriteLine($"  OK: {warmup.CustomerId} / {warmup.CompanyName} / orders={warmup.OrderCount} / sum={warmup.TotalOrderSum:N2}");
     }
-}
+    catch (Exception ex)
+    {
+        PrintException("Warmup failed", ex);
+        return false;
+    }
+    Console.WriteLine();
 
-await provider.DisposeAsync();
-return errors.Count == 0 ? 0 : 1;
+    var results = new ConcurrentBag<CustomerStatsDto>();
+    var errors = new ConcurrentBag<Exception>();
+
+    var parallelTimer = Stopwatch.StartNew();
+    Parallel.For(
+        0,
+        TaskCount,
+        new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
+        _ =>
+        {
+            try
+            {
+                var stats = execute().GetAwaiter().GetResult();
+                results.Add(stats);
+            }
+            catch (Exception ex)
+            {
+                errors.Add(ex);
+            }
+        });
+    parallelTimer.Stop();
+
+    Console.WriteLine($"Parallel finished in {parallelTimer.ElapsedMilliseconds} ms");
+    Console.WriteLine($"  Success: {results.Count}/{TaskCount}");
+    Console.WriteLine($"  Failed:  {errors.Count}/{TaskCount}");
+    Console.WriteLine();
+
+    if (results.Count > 0)
+    {
+        Console.WriteLine("Sample results (first 5):");
+        foreach (var r in results.Take(5))
+            Console.WriteLine($"  {r.CustomerId,-6} {r.CompanyName,-30} orders={r.OrderCount,4} sum={r.TotalOrderSum,12:N2}");
+        Console.WriteLine();
+    }
+
+    if (errors.Count > 0)
+    {
+        Console.WriteLine("Errors by type:");
+        foreach (var group in errors.GroupBy(e => e.GetType().Name).OrderByDescending(g => g.Count()))
+        {
+            var sample = group.First();
+            Console.WriteLine($"  {group.Key}: {group.Count()}");
+            Console.WriteLine($"    {sample.Message}");
+            var inner = sample.InnerException;
+            while (inner != null)
+            {
+                Console.WriteLine($"    -> {inner.GetType().Name}: {inner.Message}");
+                inner = inner.InnerException;
+            }
+        }
+        Console.WriteLine();
+    }
+
+    return errors.Count == 0;
+}
 
 static void PrintException(string heading, Exception ex)
 {

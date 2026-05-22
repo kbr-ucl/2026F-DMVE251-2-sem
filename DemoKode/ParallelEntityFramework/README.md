@@ -1,10 +1,17 @@
 # Parallel Entity Framework demo
 
-Console-demo der tester om **EF Core** kan køre **100 parallelle læsekald** mod `Northwind_large.sqlite` på **én delt `DbContext`-instans**, når alle queries bruger **`AsNoTracking()`**.
+Console-demo der sammenligner **100 parallelle læsekald** mod `Northwind_large.sqlite` med to strategier — alle queries bruger **`AsNoTracking()`**.
 
 ## Formål
 
-Undersøge om `AsNoTracking` er nok til parallel adgang på samme context — eller om EF kaster concurrency-fejl.
+| Variant | Strategi | Forventet |
+|---------|----------|-----------|
+| **A** | Én delt `DbContext` (singleton) | Mange fejl — `InvalidOperationException` (context er ikke thread-safe) |
+| **B** | `IDbContextFactory` — ny context per iteration | **100/100 OK** (EF-delen løst) |
+
+`AsNoTracking` alene løser ikke parallel adgang på samme context. Factory giver hver tråd sin egen context og `await using` dispose efter hvert kald.
+
+Under ekstrem parallelitet kan **SQLite** stadig give `database is locked` — det er en database-begrænsning, ikke EF tracking.
 
 ## Kørsel
 
@@ -16,17 +23,12 @@ dotnet run
 ## Struktur
 
 - `Models/` — Customer, Order, OrderDetail
-- `Data/NorthwindDbContext.cs` — mapping mod tabellerne `Customer`, `Order`, `OrderDetail`
-- `Tasks/CustomerStatsTask.cs` — `NorthwindDbContext` via constructor injection
-- `Program.cs` — singleton `DbContext`, warmup, `Parallel.For` × 100
-
-## Observeret resultat (typisk)
-
-- **Warmup** på main thread: OK
-- **Parallel (100):** `InvalidOperationException` — *A second operation was started on this context instance before a previous operation completed.*
-
-`AsNoTracking` fjerner ikke kravet om én operation ad gangen per `DbContext`.
+- `Data/NorthwindDbContext.cs` — EF mapping
+- `Queries/CustomerStatsQuery.cs` — fælles LINQ (AsNoTracking)
+- `Tasks/CustomerStatsTask.cs` — variant A (delt context)
+- `Tasks/CustomerStatsFactoryTask.cs` — variant B (factory)
+- `Program.cs` — kører begge varianter i træk
 
 ## Database
 
-`Northwind_large.sqlite` i console-projektroden kopieres til `bin/` ved build. Skemaet bruger `Customer.Id` (ikke klassisk `CustomerID` / `Customers`).
+`Northwind_large.sqlite` i console-projektroden kopieres til `bin/` ved build. Skema: tabeller `Customer`, `Order`, `OrderDetail` med `Customer.Id`.
